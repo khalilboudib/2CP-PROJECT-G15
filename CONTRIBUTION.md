@@ -66,7 +66,7 @@ your local changes :
 
 ### NOTE:
 
-Don’t add any binaries or other libraries files, only source files ( SampleTestApplet.java, [SampleTestClient.java](http://SampleTestClient.java) … )
+Don’t add any binaries or other libraries files, only source files ( SampleTestApplet.java, SampleTestClient.java … )
 
 ```bash
 git add jsr268gp/sampleapplet/SampleTestApplet.java
