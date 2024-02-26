@@ -9,7 +9,7 @@ public class serverSecurityTest extends Applet {
 	public static final byte INS_PC_CARD = (byte)0x01;
 	
 	
-	private byte secret =(byte) 0x12;
+	private byte[] secret = {0x41, 0x4e, 0x45, 0x53};
 	
 	
 	private serverSecurityTest() {
@@ -28,6 +28,7 @@ public class serverSecurityTest extends Applet {
 		if(this.selectingApplet()) return;
 		// getting apdu first bytes
 		byte[] buffer = apdu.getBuffer();
+		short dataLength;
 		// handling CLA
 		if(buffer[ISO7816.OFFSET_CLA] != CLA_APPLET) {
 			ISOException.throwIt(ISO7816.SW_CLA_NOT_SUPPORTED);
@@ -37,14 +38,17 @@ public class serverSecurityTest extends Applet {
 		switch (buffer[ISO7816.OFFSET_INS]){
 			case INS_CARD_PC:
 			// sending the result in the first byte of the same apdu buffer
-				buffer[0] = secret;
-				apdu.setOutgoingAndSend((short) 0, (short) 1);
+				dataLength = (short)secret.length;
+				Util.arrayCopyNonAtomic(secret, (short)0, buffer, (short)0, dataLength);
+				apdu.setOutgoingAndSend((short) 0, dataLength);
 			
 			case INS_PC_CARD:
 				// addition of two numbers and storing the result
 				apdu.setIncomingAndReceive();
 				// update the result
-				secret = (byte)buffer[ISO7816.OFFSET_CDATA];
+				dataLength = buffer[ISO7816.OFFSET_LC];
+				secret = new byte[dataLength];
+				Util.arrayCopyNonAtomic(buffer, (short)ISO7816.OFFSET_CDATA, secret, (short)0, dataLength);
 				//secret = (short)(buffer[ISO7816.OFFSET_CDATA] + buffer[ISO7816.OFFSET_CDATA + 1]);
 				break;
 

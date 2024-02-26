@@ -2,7 +2,10 @@ package clientPack;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+
+import javacard.framework.Util;
 
 import com.sun.javacard.apduio.*;
 
@@ -85,18 +88,20 @@ public static void main(String[] args) throws IOException, CadTransportException
 			if(apdu.getStatus() != 0x9000){
 				System.out.println("Error occured, can not fetch the secret, error code: "+ String.format("%02X", apdu.getStatus()));
 			}
-			System.out.println("secret value is: "+ Integer.toHexString(apdu.dataOut[0]));
+			// getting the data of the response
+			byte[] secret = apdu.dataOut;
+			String myName = new String(secret, StandardCharsets.UTF_8);
+			System.out.println("my name is: " + myName);
 			break;
 		case 2:
-			byte[] buffer = new byte[1];
-			buffer[0] = (byte)0x66;
-			
+			//String hisName = "chakib";
+			//byte[] buffer = hisName.getBytes(StandardCharsets.UTF_8);
+			byte[] buffer = {0x61, 0x62, 0x63};
 			apdu = new Apdu();
 			apdu.command[Apdu.CLA] = CLA_APPLET;
 			apdu.command[Apdu.P1] = 0x00;
 			apdu.command[Apdu.P2] = 0x00;
 			apdu.command[Apdu.INS] = INS_PC_CARD;
-			apdu.setLc(1); // size of data to be sent
 			apdu.setLe(0x7F);
 			apdu.setDataIn(buffer);
 			
