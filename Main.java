@@ -21,7 +21,7 @@ public class Main{
 	public static void main(String[] args) throws IOException, CadTransportException {
 
     	Scanner sc = new Scanner(System.in);
-    /********** Connexion à la carte *************/
+    /********** Connexion Ã  la carte *************/
     
         CadT1Client cad;
         Socket sckClient;
@@ -37,7 +37,7 @@ public class Main{
             cad= new CadT1Client(input,output);
         }
         catch(Exception e){
-            System.out.println("Impossible de se connecter à la carte");
+            System.out.println("Impossible de se connecter Ã  la carte");
             return;
         }
         
@@ -48,11 +48,11 @@ public class Main{
             cad.powerUp();
         }
         catch(Exception e){
-            System.out.println("Erreur lors de l'envoi de la commande powerup à la carte");
+            System.out.println("Erreur lors de l'envoi de la commande powerup Ã  la carte");
             return;
         }
         
- /******* Sélection de l'applet : Commande APDU de type SELECT************/
+ /******* SÃ©lection de l'applet : Commande APDU de type SELECT************/
         
         Apdu apdu = new Apdu();
         apdu.command[Apdu.CLA] = 0x00;
@@ -65,7 +65,7 @@ public class Main{
         cad.exchangeApdu(apdu);
         
         if (apdu.getStatus() != 0x9000 ) {
-           System.out.println("Erreur lors de la sélection de l'applet");
+           System.out.println("Erreur lors de la sÃ©lection de l'applet");
            System.exit(1);
         }
         
@@ -73,7 +73,7 @@ public class Main{
 /************************ Menu principal *********************/
         
         boolean fin=false;
-        int triesCount = 256;
+        int triesCount = 3;
         while(!fin && triesCount != 0){
             
             System.out.println();
@@ -84,8 +84,8 @@ public class Main{
             System.out.println("2- Verify the PIN");
             System.out.println("3- Set code ID");
             System.out.println("4- Get code ID");
-            System.out.println("5- Quitter");
-            System.out.println("Votre choix :");
+            System.out.println("5- EXIT");
+            System.out.print("Your choice :");
             
             int choix = sc.nextInt();
             while (!(choix >= 1 && choix <= 5)) {
@@ -130,11 +130,12 @@ public class Main{
                 apdu.command[Apdu.INS] =Main.INS_VERIFY_PIN;
                 cad.exchangeApdu(apdu);
                 byte[] responce = apdu.getResponseApduBytes();
-                triesCount = responce[1];
+                //triesCount = responce[1];
                 if(responce[0] == (byte)0x01){
                 	System.out.println("Allowed");
                 }else{
-                	System.out.print("Not Allowed, tries remaining : "+triesCount);
+                	triesCount  --;
+                	System.out.print("Not Allowed, attempts remaining : "+triesCount);
                 }
        
                 break;
@@ -177,6 +178,7 @@ public class Main{
                 break; */
                 
             case 5: 
+            	System.out.println("Exiting ...");
                 fin=true;
                 break;
             }                
@@ -188,7 +190,7 @@ public class Main{
             cad.powerDown();
         } 
         catch (Exception e){
-            System.out.println("Erreur lors de l'envoi de la commande Powerdown à la carte");
+            System.out.println("Erreur lors de l'envoi de la commande Powerdown Ã  la carte");
             return;
         } } 
     public static byte[] readDigits(String input) { 
