@@ -1,4 +1,5 @@
-package codes_carte;
+package appletpackage;
+
 
 import javacard.framework.*;
 
@@ -69,16 +70,23 @@ public class CodId_CodPin extends Applet{
     private void verify(APDU apdu) {
         byte[] buffer = apdu.getBuffer();
         byte byteRead = (byte) (apdu.setIncomingAndReceive());
-
+      
         // Check if PIN verification is required
         if (pin.getTriesRemaining() == 0) {
             ISOException.throwIt(ISO7816.SW_WRONG_DATA);
         }
+        buffer[1] = pin.getTriesRemaining();
 
         // Check PIN
-        if (pin.check(buffer, ISO7816.OFFSET_CDATA, byteRead) == false) {
-        	 ISOException.throwIt((short) (ISO7816.SW_DATA_INVALID + pin.getTriesRemaining()));
+        if(pin.check(buffer, ISO7816.OFFSET_CDATA, byteRead)){
+        	buffer[0] = (byte)0x01;
+        }else{
+        	buffer[0] = (byte)0x00;
         }
+        
+        apdu.setOutgoingAndSend((short) 0,(short) 2);
+
+
     }
     
  // Method to set a new code
@@ -101,5 +109,6 @@ public class CodId_CodPin extends Applet{
     }
     
 }
+
 
 
