@@ -13,6 +13,8 @@ public class Client {
 
     private byte[] publicKey;
 
+    private byte[] serverPrivateKey ;
+
     public Client (Long cardNumber , String expiringDate , String firstName , String lastName , String userAdress) {
         this.cardNumber = cardNumber ;
         this.expiringDate = expiringDate ;
@@ -75,6 +77,15 @@ public class Client {
 
     public byte[] getPublicKey() {
         return publicKey;
+    }
+
+    public void setServerPrivateKey(byte[] serverPrivateKey) {
+        this.serverPrivateKey = serverPrivateKey;
+    }
+
+
+    public byte[] getServerPrivateKey() {
+        return serverPrivateKey;
     }
 
 }
