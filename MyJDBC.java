@@ -40,7 +40,7 @@ public class MyJDBC {
 
     // Add a client to the database
     public static void addClient(Connection connection, Client client) throws SQLException {
-        String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key) VALUES (?, ?, ?, ?, ?, ? , ?)";
+        String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key , server_private_key) VALUES (?, ?, ?, ?, ?, ? , ?)";
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             // Set the statement parameters for the client data
             setStatement(statement, client);
