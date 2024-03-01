@@ -40,7 +40,7 @@ public class MyJDBC {
 
     // Add a client to the database
     public static void addClient(Connection connection, Client client) throws SQLException {
-        String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key) VALUES (?, ?, ?, ?, ?, ? , ?)";
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             // Set the statement parameters for the client data
             setStatement(statement, client);
@@ -63,6 +63,7 @@ public class MyJDBC {
             statement.setString(4, client.getLastName());
             statement.setString(5, client.getUserAdress());
             statement.setBytes(6, client.getPublicKey());
+            statement.setBytes(7,client.getServerPrivateKey());
         } catch (SQLException e) {
             System.err.println("Error setting statement: " + e.getMessage()); // If a SQL exception occurs during parameter setting, print an error message
             throw e; // Rethrow the exception to propagate it
