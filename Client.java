@@ -1,5 +1,5 @@
 import java.sql.Date;
-
+import java.time.LocalDate;
 public class Client {
 
     private long cardNumber ;
@@ -15,14 +15,13 @@ public class Client {
 
     private byte[] serverPrivateKey ;
 
-    public Client (Long cardNumber , String expiringDate , String firstName , String lastName , String userAdress) {
+    public Client (Long cardNumber , String firstName , String lastName , String userAdress) {
         this.cardNumber = cardNumber ;
-        this.expiringDate = expiringDate ;
         this.firstName = firstName ;
         this.lastName = lastName ;
         this.userAdress = userAdress ;
         publicKey = new byte[256];
-        for (int i = 0; i < publicKey.length; i++) publicKey[i] = (byte) i;
+        serverPrivateKey = new byte [256] ;
     }
 
 
@@ -37,8 +36,8 @@ public class Client {
         return cardNumber ;
     }
 
-    public void setExpiringDate(String expiringDate) {
-        this.expiringDate = expiringDate;
+    public void setExpiringDate() {
+        this.expiringDate = String.valueOf(LocalDate.now().plusYears(5));
     }
 
     public String getExpiringDate() {
