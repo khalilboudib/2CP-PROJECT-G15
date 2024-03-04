@@ -21,17 +21,27 @@ public class MyJDBC {
 
 
     // Search for client and retreive his record
-    public static boolean searchClient(Connection connection, Client client, ResultSet foundClient) throws SQLException {
+    public static boolean searchClient(Connection connection, long cardNumber) throws SQLException {
+        ResultSet foundClient = null ;
         String sqlQuery = "Select * from clients where card_number= ? ";
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setLong(1,client.getCardNumber()); // Set the placeholder to client card number
-            foundClient = statement.executeQuery(); // Execute the update to add the client to the database
-            if ( foundClient == null ) {
-                return false ; // Not Found
-            }
-            else {
-                return true ; // Found
-            }
+            statement.setLong(1,cardNumber); // Set the placeholder to client card number
+            foundClient = statement.executeQuery(); // Execute the search
+            return foundClient.next() ;
+        } catch (SQLException e) {
+            System.err.println("Error finding client: " + e.getMessage()); // If a SQL exception occurs during client search, print an error message
+            throw e ;
+        }
+    }
+
+    public static SearchResults getClientData (Connection connection, long cardNumber) throws SQLException {
+        SearchResults results = new SearchResults() ;
+        String sqlQuery = "Select * from clients where card_number= ? ";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setLong(1,cardNumber); // Set the placeholder to client card number
+            results.setResultSet(statement.executeQuery()) ; // Execute the update to add the client to the database
+            results.setFound(results.getResultSet() != null);
+            return results ;
         } catch (SQLException e) {
             System.err.println("Error finding client: " + e.getMessage()); // If a SQL exception occurs during client search, print an error message
             throw e ;
@@ -40,17 +50,18 @@ public class MyJDBC {
 
     // Add a client to the database
     public static void addClient(Connection connection, Client client) throws SQLException {
-        String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key , server_private_key) VALUES (?, ?, ?, ?, ?, ? , ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the statement parameters for the client data
-            setStatement(statement, client);
-            // Execute the update to add the client to the database
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            // If a SQL exception occurs during client addition, print an error message
-            System.err.println("Error adding client: " + e.getMessage());
-            throw e ;
-        }
+
+            String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key , server_private_key) VALUES (?, ?, ?, ?, ?, ? , ?)";
+            try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+                // Set the statement parameters for the client data
+                setStatement(statement, client);
+                // Execute the update to add the client to the database
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                // If a SQL exception occurs during client addition, print an error message
+                System.err.println("Error adding client: " + e.getMessage());
+                throw e ;
+            }
     }
 
     // Set the statement parameters for adding a client
@@ -72,16 +83,18 @@ public class MyJDBC {
 
 
     // Delete client from data base
-    public static void deleteClient (Connection connection , Client client ) throws SQLException {
+    public static void deleteClient (Connection connection , long cardNumber ) throws SQLException {
         String sqlQuery = "delete from clients where card_number= ? ";
         try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setLong(1,client.getCardNumber()); // Set the placeholder to client card number
+            statement.setLong(1,cardNumber); // Set the placeholder to client card number
             statement.executeUpdate(); // Execute the update to delete the client from the database
         } catch (SQLException e) {
             System.err.println("Error deleting client: " + e.getMessage()); // If a SQL exception occurs during client delete, print an error message
             throw e ;
         }
     }
+
+
 
 
     public static void closeConnection(Connection connection) {
@@ -97,3 +110,8 @@ public class MyJDBC {
 
 
 }
+
+
+
+
+
