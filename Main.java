@@ -74,12 +74,15 @@ public class Main {
     public static void handleAddUser (Connection connection) throws SQLException {
 
         Random random = new Random();
-        long userCardNumber = Math.abs(random.nextLong());
+        long min = 0L; // 10^16
+        long max = 999999999999999999L; // 10^18 - 1
+        long userCardNumber = Math.abs(min + ((long) (random.nextDouble() * (max - min + 1))));
         while (MyJDBC.searchClient(connection,userCardNumber)) {
-            userCardNumber = Math.abs(random.nextLong());
+            userCardNumber = Math.abs(min + ((long) (random.nextDouble() * (max - min + 1))));
         }
 
         System.out.println("Card Number was generated successfully...");
+        System.out.println("Card number is: " + userCardNumber);
         System.out.println("Please provide the informations we are asking below");
         System.out.print("Enter the user first name: ");
         String userFirstName = myObj.nextLine() ;
