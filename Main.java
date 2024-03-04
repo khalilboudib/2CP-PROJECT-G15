@@ -75,7 +75,7 @@ public class Main {
 
         Random random = new Random();
         long userCardNumber = Math.abs(random.nextLong());
-        while (!MyJDBC.searchClient(connection,userCardNumber)) {
+        while (MyJDBC.searchClient(connection,userCardNumber)) {
             userCardNumber = Math.abs(random.nextLong());
         }
 
