@@ -1,9 +1,0 @@
-public APDU setAPDU (byte cla , byte ins , byte p1 , byte p2 , byte[] data) {
-    APDU apdu = new APDU() ;
-    apdu.command[Apdu.CLA] = cla;
-    apdu.command[Apdu.INS] = ins;
-    apdu.command[Apdu.P1] = p1;
-    apdu.command[Apdu.P2] = p2;
-    apdu.setDataIn(data);
-    return apdu ;
-}
