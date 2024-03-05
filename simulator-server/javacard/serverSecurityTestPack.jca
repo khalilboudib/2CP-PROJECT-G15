@@ -1,0 +1,291 @@
+// converted by version 1.3
+// on Tue Mar 05 10:27:02 WAT 2024
+
+.package serverSecurityTestPack {
+	.aid 0x1:0x2:0x3:0x4:0x5:0x6:0x7:0x8:0x9:0x0;
+	.version 1.0;
+
+	.imports {
+		0xA0:0x0:0x0:0x0:0x62:0x1:0x1 1.3;		//javacard/framework
+		0xA0:0x0:0x0:0x0:0x62:0x0:0x1 1.0;		//java/lang
+	}
+
+	.applet {
+		0x1:0x2:0x3:0x4:0x5:0x6:0x7:0x8:0x9:0x0:0x0 serverSecurityTest;
+	}
+
+	.constantPool {
+		// 0
+		instanceFieldRef byte[] serverSecurityTest/cardPublicKeyMod;
+		// 1
+		instanceFieldRef byte[] serverSecurityTest/cardPublicKeyExp;
+		// 2
+		instanceFieldRef byte[] serverSecurityTest/serverPublicKeyMod;
+		// 3
+		instanceFieldRef byte[] serverSecurityTest/serverPublicKeyExp;
+		// 4
+		instanceFieldRef byte[] serverSecurityTest/cardPrivateKeyP;
+		// 5
+		instanceFieldRef byte[] serverSecurityTest/cardPrivateKeyQ;
+		// 6
+		instanceFieldRef byte[] serverSecurityTest/cardPrivateKeyExp;
+		// 7
+		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 8
+		classRef serverSecurityTest;
+		// 9
+		staticMethodRef serverSecurityTest/<init>()V;
+		// 10
+		virtualMethodRef 0.3.1()V;		// register()V
+		// 11
+		virtualMethodRef 0.10.1()[B;		// getBuffer()[B
+		// 12
+		staticMethodRef 0.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 13
+		virtualMethodRef 0.10.8(SS)V;		// setOutgoingAndSend(SS)V
+		// 14
+		virtualMethodRef 0.10.15()S;		// getIncomingLength()S
+		// 15
+		virtualMethodRef 0.10.6()S;		// setIncomingAndReceive()S
+		// 16
+		staticMethodRef 0.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 17
+		virtualMethodRef 0.3.3()Z;		// selectingApplet()Z
+		// 18
+		virtualMethodRef serverSecurityTest/receiveFromClient(Ljavacard/framework/APDU;)[B;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+		// 19
+		virtualMethodRef serverSecurityTest/sendToClient(Ljavacard/framework/APDU;[B)V;
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+	}
+
+	.class public serverSecurityTest 0 extends 0.3 {		// extends javacard/framework/Applet
+
+		.fields {
+			private byte[] cardPublicKeyMod 0;		// [B
+			private byte[] cardPublicKeyExp 1;		// [B
+			private byte[] serverPublicKeyMod 2;		// [B
+			private byte[] serverPublicKeyExp 3;		// [B
+			private byte[] cardPrivateKeyP 4;		// [B
+			private byte[] cardPrivateKeyQ 5;		// [B
+			private byte[] cardPrivateKeyExp 6;		// [B
+			public static final byte CLA_APPLET = -128;		// B
+			public static final byte INS_CS_RSA_CARD_PUBLIC_MOD = 1;		// B
+			public static final byte INS_CS_RSA_CARD_PUBLIC_EXP = 2;		// B
+			public static final byte INS_CS_RSA_SERVER_PUBLIC_MOD = 3;		// B
+			public static final byte INS_CS_RSA_SERVER_PUBLIC_EXP = 4;		// B
+			public static final byte INS_CS_RSA_CARD_PRIVATE_P = 5;		// B
+			public static final byte INS_CS_RSA_CARD_PRIVATE_Q = 6;		// B
+			public static final byte INS_CS_RSA_CARD_PRIVATE_EXP = 7;		// B
+			public static final byte INS_SC_RSA_CARD_PUBLIC_MOD = 8;		// B
+			public static final byte INS_SC_TEST = 11;		// B
+			public static final byte INS_CS_TEST = 12;		// B
+			public static final byte INS_PC_CARD = 9;		// B
+			public static final byte INS_RSA_ENCRYPT = 10;		// B
+		}
+
+		.publicMethodTable 7 {
+			equals(Ljava/lang/Object;)Z;
+			register()V;
+			register([BSB)V;
+			selectingApplet()Z;
+			deselect()V;
+			getShareableInterfaceObject(Ljavacard/framework/AID;B)Ljavacard/framework/Shareable;;
+			select()Z;
+			process(Ljavacard/framework/APDU;)V;
+			sendToClient(Ljavacard/framework/APDU;[B)V;
+			receiveFromClient(Ljavacard/framework/APDU;)[B;
+		}
+
+		.packageMethodTable 0 {
+		}
+
+		.method private <init>()V {
+			.stack 2;
+			.locals 0;
+
+				L0:	aload_0;
+					invokespecial 7;		// javacard/framework/Applet.<init>()V
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 0;		// reference serverSecurityTestPack/serverSecurityTest.cardPublicKeyMod
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 1;		// reference serverSecurityTestPack/serverSecurityTest.cardPublicKeyExp
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 2;		// reference serverSecurityTestPack/serverSecurityTest.serverPublicKeyMod
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 3;		// reference serverSecurityTestPack/serverSecurityTest.serverPublicKeyExp
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 4;		// reference serverSecurityTestPack/serverSecurityTest.cardPrivateKeyP
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 5;		// reference serverSecurityTestPack/serverSecurityTest.cardPrivateKeyQ
+					aload_0;
+					sspush 256;
+					newarray 11;
+					putfield_a 6;		// reference serverSecurityTestPack/serverSecurityTest.cardPrivateKeyExp
+					return;
+		}
+
+		.method public static install([BSB)V 0 {
+			.stack 2;
+			.locals 0;
+
+				L0:	new 8;		// serverSecurityTestPack/serverSecurityTest
+					dup;
+					invokespecial 9;		// serverSecurityTestPack/serverSecurityTest.<init>()V
+					invokevirtual 10;		// register()V
+					return;
+		}
+
+		.method public sendToClient(Ljavacard/framework/APDU;[B)V 8 {
+			.stack 5;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 11;		// getBuffer()[B
+					astore_3;
+					aload_2;
+					arraylength;
+					sstore 4;
+					aload_2;
+					sconst_0;
+					aload_3;
+					sconst_0;
+					sload 4;
+					invokestatic 12;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload_1;
+					sconst_0;
+					sload 4;
+					invokevirtual 13;		// setOutgoingAndSend(SS)V
+					return;
+		}
+
+		.method public receiveFromClient(Ljavacard/framework/APDU;)[B 9 {
+			.stack 5;
+			.locals 3;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_1;
+					invokevirtual 11;		// getBuffer()[B
+					astore_2;
+					aload_1;
+					invokevirtual 14;		// getIncomingLength()S
+					sstore_3;
+					aload_1;
+					invokevirtual 15;		// setIncomingAndReceive()S
+					pop;
+					sload_3;
+					newarray 11;
+					astore 4;
+					aload_2;
+					sconst_5;
+					aload 4;
+					sconst_0;
+					sload_3;
+					invokestatic 12;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					pop;
+					aload 4;
+					arraylength;
+					sload_3;
+					if_scmpge L2;
+				L1:	sspush 26368;
+					invokestatic 16;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload 4;
+					areturn;
+		}
+
+		.method public process(Ljavacard/framework/APDU;)V 7 {
+			.stack 3;
+			.locals 1;
+
+			.descriptor	Ljavacard/framework/APDU;	0.10;
+
+				L0:	aload_0;
+					invokevirtual 17;		// selectingApplet()Z
+					ifeq L2;
+				L1:	return;
+				L2:	aload_1;
+					invokevirtual 11;		// getBuffer()[B
+					astore_2;
+					aload_2;
+					sconst_0;
+					baload;
+					bspush -128;
+					if_scmpeq L4;
+				L3:	sspush 28160;
+					invokestatic 16;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	aload_2;
+					sconst_1;
+					baload;
+					stableswitch L13 1 8 L5 L6 L7 L8 L9 L10 L11 L12;
+				L5:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 0;		// reference serverSecurityTestPack/serverSecurityTest.cardPublicKeyMod
+					goto L14;
+				L6:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 1;		// reference serverSecurityTestPack/serverSecurityTest.cardPublicKeyExp
+					goto L14;
+				L7:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 2;		// reference serverSecurityTestPack/serverSecurityTest.serverPublicKeyMod
+					goto L14;
+				L8:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 3;		// reference serverSecurityTestPack/serverSecurityTest.serverPublicKeyExp
+					goto L14;
+				L9:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 4;		// reference serverSecurityTestPack/serverSecurityTest.cardPrivateKeyP
+					goto L14;
+				L10:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 5;		// reference serverSecurityTestPack/serverSecurityTest.cardPrivateKeyQ
+					goto L14;
+				L11:	aload_0;
+					aload_0;
+					aload_1;
+					invokevirtual 18;		// receiveFromClient(Ljavacard/framework/APDU;)[B
+					putfield_a 6;		// reference serverSecurityTestPack/serverSecurityTest.cardPrivateKeyExp
+					goto L14;
+				L12:	aload_0;
+					aload_1;
+					getfield_a_this 0;		// reference serverSecurityTestPack/serverSecurityTest.cardPublicKeyMod
+					invokevirtual 19;		// sendToClient(Ljavacard/framework/APDU;[B)V
+				L13:	sspush 27904;
+					invokestatic 16;		// javacard/framework/ISOException.throwIt(S)V
+				L14:	return;
+		}
+
+	}
+
+}
