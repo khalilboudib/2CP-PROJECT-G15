@@ -34,82 +34,166 @@ public class MyJDBC {
         long offset = (pageNumber - 1) * numberUsersPerPage;
         Client[] clients = new Client[numberUsersPerPage];
         String sqlQuery = "SELECT * FROM clients LIMIT ? OFFSET ?";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        PreparedStatement statement = null;
+
+        try {
+            statement = connection.prepareStatement(sqlQuery);
             // Set the placeholder to client card number
             statement.setLong(1, numberUsersPerPage);
             statement.setLong(2, offset);
             // Execute the search
             foundClients = statement.executeQuery();
+
             int index = 0;
             while (foundClients.next()) {
-                Client client = new Client(foundClients.getLong(1),String.valueOf(foundClients.getString(2)),foundClients.getString(3),foundClients.getString(4),foundClients.getString(5),foundClients.getBytes(6),foundClients.getBytes(7));
+                Client client = new Client(foundClients.getLong(1),
+                                           String.valueOf(foundClients.getString(2)),
+                                           foundClients.getString(3),
+                                           foundClients.getString(4),
+                                           foundClients.getString(5),
+                                           foundClients.getBytes(6),
+                                           foundClients.getBytes(7));
                 clients[index++] = client;
             }
-            return clients ;
+            return clients;
         } catch (SQLException e) {
             // If a SQL exception occurs during client search, print an error message
             System.err.println("Error finding client: " + e.getMessage());
             // Rethrow the exception to propagate it
             throw e;
+        } catch (UnsupportedClassVersionError e) {
+            // Handle the UnsupportedClassVersionError
+            System.err.println("Unsupported Java version. Please switch to JDK 1.7 or higher.");
+            // Optionally, you can choose to gracefully terminate the program or log the error
+            // depending on your application's requirements.
+            // System.exit(1); // Terminate the program
+            // log.error("Unsupported Java version", e); // Log the error
+        } finally {
+            // Close resources in finally block
+            if (foundClients != null) {
+                try {
+                    foundClients.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing result set: " + e.getMessage());
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing statement: " + e.getMessage());
+                }
+            }
         }
+		return clients;
 
     }
 
     // Search for client and retrieve their record
     public static boolean searchClient(Connection connection, long cardNumber) throws SQLException {
-        ResultSet foundClient = null ;
-        String sqlQuery = "Select * from clients where card_number= ? ";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the placeholder to client card number
-            statement.setLong(1, cardNumber);
-            // Execute the search
-            foundClient = statement.executeQuery();
-            // Return true if a client is found, otherwise false
-            return foundClient.next();
-        } catch (SQLException e) {
-            // If a SQL exception occurs during client search, print an error message
-            System.err.println("Error finding client: " + e.getMessage());
-            // Rethrow the exception to propagate it
-            throw e;
-        }
+    	ResultSet foundClient = null;
+    	String sqlQuery = "SELECT * FROM clients WHERE card_number = ?";
+    	try {
+    	    PreparedStatement statement = connection.prepareStatement(sqlQuery);
+    	    // Set the placeholder to client card number
+    	    statement.setLong(1, cardNumber);
+    	    // Execute the search
+    	    foundClient = statement.executeQuery();
+    	    // Return true if a client is found, otherwise false
+    	    return foundClient.next();
+    	} catch (SQLException e) {
+    	    // If a SQL exception occurs during client search, print an error message
+    	    System.err.println("Error finding client: " + e.getMessage());
+    	    // Rethrow the exception to propagate it
+    	    throw e;
+    	} catch (UnsupportedClassVersionError e) {
+    	    // Handle the UnsupportedClassVersionError
+    	    System.err.println("Unsupported Java version. Please switch to JDK 1.7 or higher.");
+    	    // Optionally, you can choose to gracefully terminate the program or log the error
+    	    // depending on your application's requirements.
+    	    // System.exit(1); // Terminate the program
+    	    // log.error("Unsupported Java version", e); // Log the error
+    	} finally {
+    	    // Close the ResultSet in the finally block
+    	    if (foundClient != null) {
+    	        try {
+    	            foundClient.close();
+    	        } catch (SQLException e) {
+    	            System.err.println("Error closing result set: " + e.getMessage());
+    	        }
+    	    }
+    	}
+		return foundClient.next();
     }
 
     public static Client getClientData(Connection connection, long cardNumber) throws SQLException {
-        ResultSet foundClients = null ;
-        Client client = null ;
-        String sqlQuery = "SELECT * FROM clients where card_number = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the placeholder to client card number
-            statement.setLong(1, cardNumber);
-            // Execute the search
-            foundClients = statement.executeQuery();
+    	ResultSet foundClients = null;
+    	Client client = null;
+    	String sqlQuery = "SELECT * FROM clients WHERE card_number = ?";
+    	try {
+    	    PreparedStatement statement = connection.prepareStatement(sqlQuery);
+    	    // Set the placeholder to client card number
+    	    statement.setLong(1, cardNumber);
+    	    // Execute the search
+    	    foundClients = statement.executeQuery();
 
-            if (foundClients.next()) {
-                client = new Client(foundClients.getLong(1), String.valueOf(foundClients.getString(2)), foundClients.getString(3), foundClients.getString(4), foundClients.getString(5), foundClients.getBytes(6), foundClients.getBytes(7));
-            }
-            return client ;
-        } catch (SQLException e) {
-            // If a SQL exception occurs during client search, print an error message
-            System.err.println("Error finding client: " + e.getMessage());
-            // Rethrow the exception to propagate it
-            throw e;
-        }
+    	    if (foundClients.next()) {
+    	        client = new Client(foundClients.getLong(1),
+    	                            String.valueOf(foundClients.getString(2)),
+    	                            foundClients.getString(3),
+    	                            foundClients.getString(4),
+    	                            foundClients.getString(5),
+    	                            foundClients.getBytes(6),
+    	                            foundClients.getBytes(7));
+    	    }
+    	    return client;
+    	} catch (SQLException e) {
+    	    // If a SQL exception occurs during client search, print an error message
+    	    System.err.println("Error finding client: " + e.getMessage());
+    	    // Rethrow the exception to propagate it
+    	    throw e;
+    	} catch (UnsupportedClassVersionError e) {
+    	    // Handle the UnsupportedClassVersionError
+    	    System.err.println("Unsupported Java version. Please switch to JDK 1.7 or higher.");
+    	    // Optionally, you can choose to gracefully terminate the program or log the error
+    	    // depending on your application's requirements.
+    	    // System.exit(1); // Terminate the program
+    	    // log.error("Unsupported Java version", e); // Log the error
+    	} finally {
+    	    // Close the ResultSet in the finally block
+    	    if (foundClients != null) {
+    	        try {
+    	            foundClients.close();
+    	        } catch (SQLException e) {
+    	            System.err.println("Error closing result set: " + e.getMessage());
+    	        }
+    	    }
+    	}
+		return client;
     }
 
     // Add a client to the database
     public static void addClient(Connection connection, Client client) throws SQLException {
-        String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key , server_private_key) VALUES (?, ?, ?, ?, ?, ? , ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the statement parameters for the client data
-            setStatement(statement, client);
-            // Execute the update to add the client to the database
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            // If a SQL exception occurs during client addition, print an error message
-            System.err.println("Error adding client: " + e.getMessage());
-            // Rethrow the exception to propagate it
-            throw e;
-        }
+    	String sqlQuery = "INSERT INTO clients (card_number, card_expiring_date, first_name, last_name, user_adress, public_key, server_private_key) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    	try {
+    	    PreparedStatement statement = connection.prepareStatement(sqlQuery);
+    	    // Set the statement parameters for the client data
+    	    setStatement(statement, client);
+    	    // Execute the update to add the client to the database
+    	    statement.executeUpdate();
+    	} catch (SQLException e) {
+    	    // If a SQL exception occurs during client addition, print an error message
+    	    System.err.println("Error adding client: " + e.getMessage());
+    	    // Rethrow the exception to propagate it
+    	    throw e;
+    	} catch (UnsupportedClassVersionError e) {
+    	    // Handle the UnsupportedClassVersionError
+    	    System.err.println("Unsupported Java version. Please switch to JDK 1.7 or higher.");
+    	    // Optionally, you can choose to gracefully terminate the program or log the error
+    	    // depending on your application's requirements.
+    	    // System.exit(1); // Terminate the program
+    	    // log.error("Unsupported Java version", e); // Log the error
+    	}
     }
 
     // Set the statement parameters for adding a client
@@ -133,38 +217,54 @@ public class MyJDBC {
 
     // Delete client from database
     public static void deleteClient(Connection connection, long cardNumber) throws SQLException {
-        String sqlQuery = "delete from clients where card_number= ? ";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the placeholder to client card number
-            statement.setLong(1, cardNumber);
-            // Execute the update to delete the client from the database
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            // If a SQL exception occurs during client deletion, print an error message
-            System.err.println("Error deleting client: " + e.getMessage());
-            // Rethrow the exception to propagate it
-            throw e;
-        }
+    	String sqlQuery = "DELETE FROM clients WHERE card_number = ?";
+    	try {
+    	    PreparedStatement statement = connection.prepareStatement(sqlQuery);
+    	    // Set the placeholder to client card number
+    	    statement.setLong(1, cardNumber);
+    	    // Execute the update to delete the client from the database
+    	    statement.executeUpdate();
+    	} catch (SQLException e) {
+    	    // If a SQL exception occurs during client deletion, print an error message
+    	    System.err.println("Error deleting client: " + e.getMessage());
+    	    // Rethrow the exception to propagate it
+    	    throw e;
+    	} catch (UnsupportedClassVersionError e) {
+    	    // Handle the UnsupportedClassVersionError
+    	    System.err.println("Unsupported Java version. Please switch to JDK 1.7 or higher.");
+    	    // Optionally, you can choose to gracefully terminate the program or log the error
+    	    // depending on your application's requirements.
+    	    // System.exit(1); // Terminate the program
+    	    // log.error("Unsupported Java version", e); // Log the error
+    	}
     }
 
     // Edit client information in the database
     public static void editClient(Connection connection, Client client) throws SQLException {
-        String sqlQuery = "update clients set first_name = ?, last_name = ?, user_adress = ? where card_number = ? ";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the new values for first name, last name, and user address
-            statement.setString(1, client.getFirstName());
-            statement.setString(2, client.getLastName());
-            statement.setString(3, client.getUserAdress());
-            // Set the placeholder to client card number
-            statement.setLong(4, client.getCardNumber());
-            // Execute the update to edit client information
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            // If a SQL exception occurs during client edit, print an error message
-            System.err.println("Error editing client: " + e.getMessage());
-            // Rethrow the exception to propagate it
-            throw e;
-        }
+    	String sqlQuery = "UPDATE clients SET first_name = ?, last_name = ?, user_adress = ? WHERE card_number = ?";
+    	try {
+    	    PreparedStatement statement = connection.prepareStatement(sqlQuery);
+    	    // Set the new values for first name, last name, and user address
+    	    statement.setString(1, client.getFirstName());
+    	    statement.setString(2, client.getLastName());
+    	    statement.setString(3, client.getUserAdress());
+    	    // Set the placeholder to client card number
+    	    statement.setLong(4, client.getCardNumber());
+    	    // Execute the update to edit client information
+    	    statement.executeUpdate();
+    	} catch (SQLException e) {
+    	    // If a SQL exception occurs during client edit, print an error message
+    	    System.err.println("Error editing client: " + e.getMessage());
+    	    // Rethrow the exception to propagate it
+    	    throw e;
+    	} catch (UnsupportedClassVersionError e) {
+    	    // Handle the UnsupportedClassVersionError
+    	    System.err.println("Unsupported Java version. Please switch to JDK 1.7 or higher.");
+    	    // Optionally, you can choose to gracefully terminate the program or log the error
+    	    // depending on your application's requirements.
+    	    // System.exit(1); // Terminate the program
+    	    // log.error("Unsupported Java version", e); // Log the error
+    	}
     }
 
     // Close database connection

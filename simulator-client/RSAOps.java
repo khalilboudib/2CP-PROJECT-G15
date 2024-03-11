@@ -5,7 +5,9 @@ import java.math.BigInteger;
 import java.security.interfaces.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 
 public class RSAOps {
 
@@ -37,6 +39,10 @@ public class RSAOps {
 		privateKey = (RSAPrivateCrtKey) this.keyFactoryIns.generatePrivate(new PKCS8EncodedKeySpec(keyPair.getPrivate().getEncoded()));	
 		// getting the public key
 		publicKey = (RSAPublicKey) this.keyFactoryIns.generatePublic(new X509EncodedKeySpec(keyPair.getPublic().getEncoded()));
+	}
+	
+	public RSAOps(){
+		
 	}
 	
 	public byte[] getPrivateKeyMod (){
@@ -119,6 +125,25 @@ public class RSAOps {
 		    return modBytes;
 		}
 	}
+	
+	// generate privateKey object using modulus and exponent
+	public static PrivateKey createPrivateKey(byte[] modulusBytes, byte[] privateExponentBytes) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        // Create RSAPrivateKeySpec with modulus and private exponent byte arrays
+        RSAPrivateKeySpec privateKeySpec = new RSAPrivateKeySpec(new BigInteger(1, modulusBytes), new BigInteger(1, privateExponentBytes));
+
+        // Get RSA key factory instance
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+        // Generate private key from RSAPrivateKeySpec
+        return keyFactory.generatePrivate(privateKeySpec);
+    }
+	
+	// separate the d and the n in private key 
+	public static byte[][] separateNAndD(byte[] concatenatedBytes, int nLengthBytes) {
+        byte[] n = Arrays.copyOfRange(concatenatedBytes, 0, nLengthBytes);
+        byte[] d = Arrays.copyOfRange(concatenatedBytes, nLengthBytes, concatenatedBytes.length);
+        return new byte[][]{n, d};
+    }
 	
 
 
