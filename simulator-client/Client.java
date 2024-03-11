@@ -2,6 +2,10 @@ package clientPack;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
 public class Client {
 
     private long cardNumber ;
@@ -17,11 +21,26 @@ public class Client {
 
     private byte[] serverPrivateKey ;
 
+
+    public Client (Long cardNumber , String cardExpiringDate , String firstName , String lastName , String userAdress , byte[] publicKey , byte[] serverPrivateKey) {
+        this.cardNumber = cardNumber ;
+        this.firstName = firstName ;
+        this.lastName = lastName ;
+        this.userAdress = userAdress ;
+        this.publicKey = publicKey;
+        this.expiringDate = cardExpiringDate;
+        this.serverPrivateKey = serverPrivateKey ;
+
+    }
+
+
+
     public Client (Long cardNumber , String firstName , String lastName , String userAdress) {
         this.cardNumber = cardNumber ;
         this.firstName = firstName ;
         this.lastName = lastName ;
         this.userAdress = userAdress ;
+        setExpiringDate();
         publicKey = new byte[256];
         serverPrivateKey = new byte [256] ;
     }
@@ -41,6 +60,11 @@ public class Client {
     public void setExpiringDate() {
         this.expiringDate = String.valueOf(LocalDate.now().plusYears(5));
     }
+
+    public void setExpiringDate(String string) {
+        this.expiringDate = string;
+    }
+
 
     public String getExpiringDate() {
         return expiringDate ;
