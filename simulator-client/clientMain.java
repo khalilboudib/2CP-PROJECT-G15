@@ -3,6 +3,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -27,12 +28,18 @@ public class clientMain {
 	public static final byte INS_CS_RSA_CARD_PRIVATE_Q= (byte)0x06;
 	public static final byte INS_CS_RSA_CARD_PRIVATE_EXP= (byte)0x07;
 	public static final byte INS_SC_RSA_CARD_PUBLIC_MOD= (byte)0x08;
+	public static final byte INS_SC_UID = (byte)0x09;
+	public static final byte INS_CS_DH_PUBLIC_KEY = (byte)0x0A;
+	public static final byte INS_CS_DH_B = (byte)0x0B;
+	
+	public static final int MODULUS_SIZE = 128;
 	
 	static Scanner myObj = new Scanner(System.in) ;
 	static Apdu respApdu;
 	static Apdu sendApdu;
 	static CadT1Client cad;
 	static Socket sckClient;
+	static byte[] G = {(byte)0x02};
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, CadTransportException {
 
@@ -57,7 +64,9 @@ public class clientMain {
         System.out.println("2- Search for a user");
         System.out.println("3- Delete a user");
         System.out.println("4- Get the card public key");
-        System.out.println("5- Exit");
+        System.out.println("5- test");
+        System.out.println("6- Exit");
+        System.out.println("7- Auth");
         return;
     }
     public static int getChoice () {
@@ -67,7 +76,7 @@ public class clientMain {
             System.out.print("Enter your choice (Please enter a number between 1 and 5): ");
             i = myObj.nextInt() ;
             myObj.nextLine();
-            if (i<=5 && i>=1) {
+            if (i<=10 && i>=1) {
                 break;
             }
             System.out.print("\n");
@@ -90,57 +99,103 @@ public class clientMain {
             case 4 :
             	
             	// ********************************************
-                try{
-        			sckClient = new Socket("localhost", 9025);
-        			sckClient.setTcpNoDelay(true);
-        			BufferedInputStream input = new BufferedInputStream(sckClient.getInputStream());
-        			BufferedOutputStream output = new BufferedOutputStream(sckClient.getOutputStream());
-        			// creation of the reader with the previous input and output streams
-        			cad = new CadT1Client(input, output);
-        		}
-        		catch(Exception e){
-        			System.out.println("Error! Can not open socket or create the reader");
-        		
-        		}
-        		// powring the card
-        		try{
-        			cad.powerUp();
-        		}
-        		catch(Exception e){
-        			System.out.println("Error! Can not powerup the card");
-        			
-        		}
-        	
-        		// Beginning of conversations with the card
-        	
-        		// Select the applet
-        		Apdu apdu = new Apdu();
-        		apdu.command[Apdu.CLA] = (byte)0x00;
-        		apdu.command[Apdu.INS] = (byte)0xA4;
-        		apdu.command[Apdu.P1] = 0x04;
-        		apdu.command[Apdu.P2] = 0x00;
-        		byte[] appletAID = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,0x07, 0x08, 0x09, 0x00, 0x00 };
-        		apdu.setDataIn(appletAID);
-        		cad.exchangeApdu(apdu);
-        		// check the response
-        		if(apdu.getStatus() != 0x9000){
-        			System.out.println("Error occured. Selection is not successful");
-        			
-        		}else{
-        			System.out.println("Selection successful");
-        		}
+                //cad = connectAndSelect();
             	// ********************************************
             	
-                
-        		
         		//handleDisplayUsers(connection);
+            	cad = connectAndSelect();
                 respApdu = sendApduToCard(CLA_APPLET, INS_SC_RSA_CARD_PUBLIC_MOD, (byte)0x00, (byte)0x00, cad);
             	System.out.println(respApdu);
+            	cad.powerDown();
                 
             	break;
-            case 5 :
+            
+            // tests
+            case 5:
+            	System.out.print("base: ");
+                Integer base = myObj.nextInt() ;
+                System.out.print("\n");
+
+                System.out.print("power: ");
+                Integer power = myObj.nextInt() ;
+                System.out.print("\n");
+
+                System.out.print("modular: ");
+                Integer mod = myObj.nextInt() ;
+                System.out.print("\n");
+                
+                byte[] baseArray = BigInteger.valueOf(base).toByteArray();
+                byte[] powerArray = BigInteger.valueOf(power).toByteArray();
+                byte[] modArray = BigInteger.valueOf(mod).toByteArray();
+                byte[] result = DH.modularExponentiation(baseArray, powerArray, modArray);
+                System.out.println("base: " + baseArray[0] + "power: " + powerArray[0] + "mod: " + modArray[0]  + "result: " + result[0]);
+                break;
+            case 6 :
                 handleExit(connection) ;
                 break;
+            
+            case 7: 
+            	// authentication
+            	// generation of DH public key
+            	byte[] P = DH.generateRandomPrime(1024).toByteArray();
+            	
+            	// **************************** CLIENT terminal *************************************
+            	
+            	// send P to the card and get the A
+            	cad = connectAndSelect();
+            	
+            	respApdu = sendApduToCard(CLA_APPLET, INS_CS_DH_PUBLIC_KEY, (byte)0x00, (byte)0x00, P, cad);
+            	// retreiving A = g^^n mod P
+            	            	
+            	// **************************** SERVER ***********************************
+            	
+            	// generate random private m
+            	byte[] m = DH.generateRandom(1024).toByteArray();
+            	byte[] B = DH.modularExponentiation(G, m, P);
+            	// getting the A from the card
+            	//byte[] A = respApdu.dataOut;
+            	
+            	// simulating the A
+            	byte[] n = DH.generateRandom(1024).toByteArray();
+            	byte[] A = DH.modularExponentiation(G, n, P);
+            	
+            	
+            	// sending B to the card
+            	Apdu respApdu2 = sendApduToCard(CLA_APPLET, INS_CS_DH_B, (byte)0x00, (byte)0x00, B, cad);
+            	// getting the card number from the card
+            	long cardNumber;
+            	System.out.println("card heeeere: apdu: ");
+            	System.out.println(respApdu2);
+            	cardNumber = DH.byteArrayToLong(respApdu.dataOut);
+            	
+            	System.out.println("card UID: " + cardNumber);
+            	System.out.println("the m: ");
+            	DH.printByteArray(m);
+            	System.out.println("the B: ");
+            	DH.printByteArray(B);
+            	System.out.println("the A: ");
+            	DH.printByteArray(A);
+            	System.out.println("the P: ");
+            	DH.printByteArray(P);
+            	
+            	// create digital signature for A and B
+            	
+            	// getting private key modulus and exponent from the data base
+            	byte[] privateKey = MyJDBC.getClientData(connection, cardNumber).getServerPrivateKey();
+            	byte[][] concatenatedPrivateKey= RSAOps.separateNAndD(privateKey, MODULUS_SIZE); 
+            
+            	// start signing
+            	byte[] sign = DH.signData(addArrays(A, B), RSAOps.createPrivateKey(concatenatedPrivateKey[0], concatenatedPrivateKey[1]));
+            	
+            	// find AES key
+            	byte[] K = DH.modularExponentiation(A, m, P);
+            	
+            	
+            	
+            	
+            	
+            	
+            	break;
             
         }
         return true ;
@@ -170,45 +225,7 @@ public class clientMain {
 
         // saving information to the database ------------------------------------------------------------
         
-        try{
-			sckClient = new Socket("localhost", 9025);
-			sckClient.setTcpNoDelay(true);
-			BufferedInputStream input = new BufferedInputStream(sckClient.getInputStream());
-			BufferedOutputStream output = new BufferedOutputStream(sckClient.getOutputStream());
-			// creation of the reader with the previous input and output streams
-			cad = new CadT1Client(input, output);
-		}
-		catch(Exception e){
-			System.out.println("Error! Can not open socket or create the reader");
-			return;
-		}
-		// powring the card
-		try{
-			cad.powerUp();
-		}
-		catch(Exception e){
-			System.out.println("Error! Can not powerup the card");
-			return;
-		}
-	
-		// Beginning of conversations with the card
-	
-		// Select the applet
-		Apdu apdu = new Apdu();
-		apdu.command[Apdu.CLA] = (byte)0x00;
-		apdu.command[Apdu.INS] = (byte)0xA4;
-		apdu.command[Apdu.P1] = 0x04;
-		apdu.command[Apdu.P2] = 0x00;
-		byte[] appletAID = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,0x07, 0x08, 0x09, 0x00, 0x00 };
-		apdu.setDataIn(appletAID);
-		cad.exchangeApdu(apdu);
-		// check the response
-		if(apdu.getStatus() != 0x9000){
-			System.out.println("Error occured. Selection is not successful");
-			return;
-		}else{
-			System.out.println("Selection successful");
-		}
+        cad = connectAndSelect();
 
         // generating rsa keys ----------------------------------------------------
 		// card keys
@@ -253,7 +270,7 @@ public class clientMain {
 		respApdu = sendApduToCard(CLA_APPLET, INS_CS_RSA_SERVER_PUBLIC_MOD, (byte)0x00, (byte)0x00, serverPublicMod, cad);
 		
 		// sending the UID of the card
-		//respApdu = sendApduToCard(CLA_APPLET, INS_SC_UID, (byte)0x00, (byte)0x00, serverPublicMod, cad);
+		respApdu = sendApduToCard(CLA_APPLET, INS_SC_UID, (byte)0x00, (byte)0x00, DH.longToBytes(userCardNumber), cad);
 		
 		
         // saving all information to the database
@@ -292,8 +309,8 @@ public class clientMain {
 
         Long cardNumber = getCardNumber() ;
         System.out.print("\n");
-        SearchResults resultSet = MyJDBC.getClientData(connection,cardNumber);
-        if (resultSet.isFound()) {
+        Client client = MyJDBC.getClientData(connection,cardNumber);
+        if (client != null) {
             System.out.println("User exists and has a card");
             // display user printUserData(resultSet.getResultSet());
             System.out.print("Are you sure you want to delete user (y/n): ");
@@ -359,9 +376,9 @@ public class clientMain {
 	    apdu.command[Apdu.INS] = ins;
 	    apdu.command[Apdu.P1] = p1;
 	    apdu.command[Apdu.P2] = p2;
-	    apdu.setLc(data.length);
+	    //apdu.setLc(data.length);
 	    apdu.setDataIn(data);
-	    apdu.setLe(0x7F);
+	    //apdu.setLe(0x7F);
 	    cad.exchangeApdu(apdu);
 	    return apdu ;
 	}
@@ -373,7 +390,7 @@ public class clientMain {
 	    apdu.command[Apdu.P1] = p1;
 	    apdu.command[Apdu.P2] = p2;
 	    apdu.setLc(0x00);
-	    apdu.setLe(0x7F);
+	    //apdu.setLe(0x7F);
 	    cad.exchangeApdu(apdu);
 	    return apdu ;
 	}
@@ -386,17 +403,75 @@ public class clientMain {
 	    return outputStream.toByteArray();
 	}
 	
-	// convert long to byte array
-	public static byte[] longToBytes(long numberLong){
-		 // Example long number
-        
-        byte[] byteArray = new byte[8]; // Long is 8 bytes in Java
-        
-        for (int i = 0; i < 8; i++) {
-            byteArray[i] = (byte) (numberLong >> (i * 8));
-        }
+	
+	// connect to simulator and select applet
+	public static CadT1Client connectAndSelect() throws IOException, CadTransportException{
+	
 		
-        return byteArray;
+		
+		try{
+			sckClient = new Socket("localhost", 9025);
+			sckClient.setTcpNoDelay(true);
+			BufferedInputStream input = new BufferedInputStream(sckClient.getInputStream());
+			BufferedOutputStream output = new BufferedOutputStream(sckClient.getOutputStream());
+			// creation of the reader with the previous input and output streams
+			cad = new CadT1Client(input, output);
+		}
+		catch(Exception e){
+			System.out.println("Error! Can not open socket or create the reader");
+		
+		}
+		// powring the card
+		try{
+			cad.powerUp();
+		}
+		catch(Exception e){
+			System.out.println("Error! Can not powerup the card");
+			
+		}
+	
+		// Beginning of conversations with the card
+	
+		// Select the applet
+		Apdu apdu = new Apdu();
+		apdu.command[Apdu.CLA] = (byte)0x00;
+		apdu.command[Apdu.INS] = (byte)0xA4;
+		apdu.command[Apdu.P1] = 0x04;
+		apdu.command[Apdu.P2] = 0x00;
+		byte[] appletAID = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,0x07, 0x08, 0x09, 0x00, 0x00 };
+		apdu.setDataIn(appletAID);
+		cad.exchangeApdu(apdu);
+		// check the response
+		if(apdu.getStatus() != 0x9000){
+			System.out.println("Error occured. Selection is not successful");
+			
+		}else{
+			System.out.println("Selection successful");
+		}
+		
+		return cad;
 	}
+	
+	// addition of two byte arrays
+	public static byte[] addArrays(byte[] array1, byte[] array2) {
+        // Check if both arrays have the same length
+        if (array1.length != array2.length) {
+            throw new IllegalArgumentException("Arrays must have the same length");
+        }
+
+        // Create a new array to store the result
+        byte[] result = new byte[array1.length];
+
+        // Perform addition of corresponding elements
+        for (int i = 0; i < array1.length; i++) {
+            // Add the elements of the two arrays at index i
+            result[i] = (byte) (array1[i] + array2[i]);
+        }
+
+        return result;
+    }
+	
+	
+	
 
 }
