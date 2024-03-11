@@ -16,11 +16,12 @@ public class serverSecurityTest extends Applet {
 	public static final byte INS_CS_RSA_CARD_PRIVATE_Q= (byte)0x06;
 	public static final byte INS_CS_RSA_CARD_PRIVATE_EXP= (byte)0x07;
 	public static final byte INS_SC_RSA_CARD_PUBLIC_MOD= (byte)0x08;
-	public static final byte INS_SC_TEST = (byte)0x0B;
-	public static final byte INS_CS_TEST = (byte)0x0C;
-	//public static final byte INS_CARD_PC = (byte)0x08;
-	public static final byte INS_PC_CARD = (byte)0x09;
-	public static final byte INS_RSA_ENCRYPT = (byte)0x0A;
+	public static final byte INS_SC_UID = (byte)0x09;
+	public static final byte INS_CS_DH_PUBLIC_KEY = (byte)0x0A;
+	public static final byte INS_CS_DH_B = (byte)0x0B;
+	
+	public static final byte DH_KEY_LENGTH = (byte)0x80;
+	
 	
 	private byte[] cardPublicKeyMod = new byte[256];
 	private byte[] cardPublicKeyExp = new byte[256];
@@ -29,6 +30,7 @@ public class serverSecurityTest extends Applet {
 	private byte[] cardPrivateKeyP = new byte[256];
 	private byte[] cardPrivateKeyQ = new byte[256];
 	private byte[] cardPrivateKeyExp = new byte[256];
+	private byte[] cardUID = new byte[256];
 	
 	
 	
@@ -114,12 +116,38 @@ public class serverSecurityTest extends Applet {
 			cardPrivateKeyQ = receiveFromClient(apdu);
 			break;
 			
+		
 		case INS_CS_RSA_CARD_PRIVATE_EXP:
 			cardPrivateKeyExp = receiveFromClient(apdu);
 			break;
+		
 		case INS_SC_RSA_CARD_PUBLIC_MOD:
 			sendToClient(apdu, cardPublicKeyMod);
 			break;
+		
+		case INS_SC_UID:
+			cardUID = receiveFromClient(apdu);
+			break;
+		
+		case INS_CS_DH_PUBLIC_KEY:
+			// getting DH public key
+			byte[] P = JCSystem.makeTransientByteArray(DH_KEY_LENGTH, JCSystem.CLEAR_ON_RESET);
+			P = receiveFromClient(apdu);
+			
+			// calculate A
+			// --------------------
+			// calculate modular exponential
+			break;
+			
+		case INS_CS_DH_B:
+			// getting B from the server
+			byte[] B = JCSystem.makeTransientByteArray(DH_KEY_LENGTH, JCSystem.CLEAR_ON_RESET);
+			B = receiveFromClient(apdu);
+			// sending card number
+			sendToClient(apdu, cardUID);
+			
+			break;
+			
 		default:
 			ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
 				
@@ -249,3 +277,4 @@ public class serverSecurityTest extends Applet {
 		}
 	}
 }
+
