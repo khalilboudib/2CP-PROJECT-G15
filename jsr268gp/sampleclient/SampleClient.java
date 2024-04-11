@@ -61,7 +61,7 @@ public class SampleClient {
 	
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, CardException {
 		
-			//Sélectionner votre lecteur de carte
+			//SÃ©lectionner votre lecteur de carte
 			//Le nom du lecteur se trouve dans la base de registres:
 			//Hkey local machine/software / Microsoft/cryptography/calais/readers
 		TerminalFactory tf = TerminalFactory.getDefault();
@@ -84,7 +84,7 @@ public class SampleClient {
 		ResponseAPDU response = APDUOps.sendApduToCard((byte)0x80, (byte)0x99, (byte)0x01, (byte)0x02, arr, canal);
 		
 		System.out.println("Reponse : "+Util.byteArrayToHexString(response.getBytes(), " "));*/
-		// Déconnexion
+		// DÃ©connexion
 		//c.disconnect(false);
 			
 		
@@ -105,19 +105,19 @@ public class SampleClient {
         System.out.println("2- Search for a user");
         System.out.println("3- Delete a user");
         System.out.println("4- Get the card public key");
-        System.out.println("5- test");
-        System.out.println("6- Exit");
-        System.out.println("7- Auth");
+        System.out.println("5- Display all users");
+        System.out.println("6- Auth");
+        System.out.println("7- Exit");
         return;
     }
     public static int getChoice () {
         System.out.println("\n\n");
         int i ;
         while (true) {
-            System.out.print("Enter your choice (Please enter a number between 1 and 5): ");
+            System.out.print("Enter your choice (Please enter a number between 1 and 7): ");
             i = myObj.nextInt() ;
             myObj.nextLine();
-            if (i<=10 && i>=1) {
+            if (i<=7 && i>=1) {
                 break;
             }
             System.out.print("\n");
@@ -154,24 +154,8 @@ public class SampleClient {
             
             // tests
             case 5:
-            	System.out.print("base: ");
-                Integer base = myObj.nextInt() ;
-                System.out.print("\n");
-
-                System.out.print("power: ");
-                Integer power = myObj.nextInt() ;
-                System.out.print("\n");
-
-                System.out.print("modular: ");
-                Integer mod = myObj.nextInt() ;
-                System.out.print("\n");
-                
-                byte[] baseArray = BigInteger.valueOf(base).toByteArray();
-                byte[] powerArray = BigInteger.valueOf(power).toByteArray();
-                byte[] modArray = BigInteger.valueOf(mod).toByteArray();
-                byte[] result = DH.modularExponentiation(baseArray, powerArray, modArray);
-                System.out.println("base: " + baseArray[0] + "power: " + powerArray[0] + "mod: " + modArray[0]  + "result: " + result[0]);
-                break;
+            	handleDisplayUsers(connection) ;
+            	break ;
             case 6 :
                 handleExit(connection) ;
                 break;
@@ -373,7 +357,19 @@ public class SampleClient {
     }
 
 
-    public static void handleDisplayUsers(Connection connection) {
+    public static void handleDisplayUsers(Connection connection) throws SQLException {
+
+        Client[] clients = MyJDBC.getClients(connection , 1000000 , 1) ;
+        System.out.println(" Card Number      | First Name              | last Name               ");
+        System.out.println("----------------------------------------------------------------------");
+        for (Client client : clients) {
+        	if (client != null) {
+        		String userData = String.format("%-18d| %-25s|%-25s", client.getCardNumber(), client.getFirstName(), client.getLastName());
+        		System.out.println(userData);
+        		System.out.println("----------------------------------------------------------------------");
+        	}
+
+        }
 
     }
 
