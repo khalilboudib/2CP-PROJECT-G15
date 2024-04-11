@@ -5,6 +5,7 @@ import javax.crypto.interfaces.DHPublicKey;
 import java.security.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.interfaces.DHPrivateKey;
@@ -64,11 +65,13 @@ public class DH {
 	        System.arraycopy(byteArray, 0, paddedArray, 8 - byteArray.length, byteArray.length);
 	        // Create a ByteBuffer and wrap the padded byte array
 	        ByteBuffer buffer = ByteBuffer.wrap(paddedArray);
+	        buffer.order(ByteOrder.LITTLE_ENDIAN);
 	        // Get the long value from the ByteBuffer
 	        return buffer.getLong();
 	    } else {
 	        // If the byte array already has 8 or more bytes, proceed as before
 	        ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+	        buffer.order(ByteOrder.LITTLE_ENDIAN);
 	        return buffer.getLong();
 	    }
 	}
@@ -76,24 +79,67 @@ public class DH {
 	// RSA sign using private key
 	public static byte[] signData (byte[] data,PrivateKey privateKey)throws NoSuchAlgorithmException{
 		byte[] digitalSignature = null;
+		
 		try{
 		// Création d'un objet Signature avec l'algorithme SHA256withRSA
-	    Signature signature = Signature.getInstance("SHA256withRSA");
+	    Signature signatureIns = Signature.getInstance("SHA1withRSA");
 	    
 	    // Initialisation de l'objet Signature avec la clé privée
-	    signature.initSign(privateKey);
+	    signatureIns.initSign(privateKey);
 	    
 	    // Ajout des données à signer
-	    signature.update(data);
+	    signatureIns.update(data);
 	    
 	    // Signature des données
-	     digitalSignature = signature.sign();
+	     digitalSignature = signatureIns.sign();
 	    
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return digitalSignature;
 	}
+	
+	public static boolean verifySignature(byte[] data, byte[] signature,PublicKey publicKey) {
+		boolean isVerified = false;
+		try{
+		// Création d'un objet Signature avec l'algorithme SHA256withRSA
+	    Signature signatureIns = Signature.getInstance("SHA1withRSA");
+	    
+	    // Initialisation de l'objet Signature avec la clé privée
+	    signatureIns.initVerify(publicKey);
+	    
+	    // Ajout des données à signer
+	    signatureIns.update(data);
+	    
+	    // Signature des données
+	    isVerified = signatureIns.verify(signature);
+	    
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return isVerified;
+   }
+	
+	// masque function
+	public static byte[] masqueFunction(byte[] secret){
+		try {
+	        // Use SHA-256 as the hash function
+	        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+
+	        // Compute the SHA-256 hash of the shared secret
+	        byte[] sha256Hash = sha256.digest(secret);
+
+	        // Truncate the hash to 128 bits (16 bytes)
+	        byte[] aesKeyBytes = new byte[16];
+	        System.arraycopy(sha256Hash, 0, aesKeyBytes, 0, aesKeyBytes.length);
+	        return aesKeyBytes;
+
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+	
 	
 	// print byte array
 	public static void printByteArray(byte[] byteArray) {
@@ -106,4 +152,14 @@ public class DH {
         }
         System.out.println("]");
     }
+	
+	// concatenate two byte arrays
+	public static byte[] concat(byte[] A, byte[] B){
+		
+		byte[] AB = new byte[A.length + B.length];
+		System.arraycopy(A, 0, AB, 0, A.length);
+		System.arraycopy(B, 0, AB, A.length, B.length);
+		return AB;
+		
+	}
 }

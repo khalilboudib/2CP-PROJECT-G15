@@ -5,12 +5,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.Scanner;
+
+
+
+
+
+
+
+
+
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import com.sun.javacard.apduio.Apdu;
 import com.sun.javacard.apduio.CadT1Client;
@@ -31,8 +50,26 @@ public class clientMain {
 	public static final byte INS_SC_UID = (byte)0x09;
 	public static final byte INS_CS_DH_PUBLIC_KEY = (byte)0x0A;
 	public static final byte INS_CS_DH_B = (byte)0x0B;
+	public static final byte INS_GET_UID = (byte)0x0C;
+	public static final byte INS_CS_DH_SIGN = (byte)0x0D;
+	public static final byte INS_SC_SIGN_STATUS = (byte)0x0E;
+	public static final byte INS_SC_DH_SIGN = (byte)0x0F;
+	public static final byte INS_ECHO = (byte)0x99;
+	public static final byte INS_SC_N = (byte)0x98;
+	public static final byte INS_CS_A = (byte)0x97;
+	public static final byte INS_CS_DH_K = (byte)0x96;
+	public static final byte INS_SC_DH_K = (byte)0x95;
+	public static final byte INS_GET_SERVER_PUB_MOD = (byte)0x94;
+	public static final byte INS_GET_SERVER_PUB_EXP = (byte)0x93;
+	public static final byte INS_GET_CARD_PUB_MOD = (byte)0x92;
+	public static final byte INS_GET_CARD_PUB_EXP = (byte)0x91;
+	public static final byte INS_CS_ENC_AES = (byte)0x90;
+	public static final byte INS_CS_DEC_AES = (byte)0x89;
+	public static final byte INS_TEST_K = (byte)0x88;
+	public static final byte INS_TEST_SIGN = (byte)0x87;
+	public static final byte INS_TEST = (byte)0x92;
 	
-	public static final int MODULUS_SIZE = 128;
+	public static final int MODULUS_SIZE = 64;
 	
 	static Scanner myObj = new Scanner(System.in) ;
 	static Apdu respApdu;
@@ -41,15 +78,16 @@ public class clientMain {
 	static Socket sckClient;
 	static byte[] G = {(byte)0x02};
 	
-	public static void main(String[] args) throws ClassNotFoundException, SQLException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, CadTransportException {
+	public static void main(String[] args) throws Exception {
 
 		Connection connection =  MyJDBC.connectToDataBase() ;
+		cad = connectAndSelect();
         display(connection);
         MyJDBC.closeConnection(connection);
 		
 	}
 	
-	public static void display(Connection connection) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, CadTransportException {
+	public static void display(Connection connection) throws Exception {
         boolean keep ;
         do {
             menu();
@@ -85,7 +123,7 @@ public class clientMain {
         return i ;
     }
 
-    public static boolean handleUserChoice (int choice , Connection connection) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, CadTransportException {
+    public static boolean handleUserChoice (int choice , Connection connection) throws Exception {
         switch (choice) {
             case 1 :
 				handleAddUser(connection);
@@ -94,8 +132,11 @@ public class clientMain {
                 handleSearchUser(connection);
                 break ;
             case 3 :
-                handleDeleteUser(connection) ;
-                break ;
+                //handleDeleteUser(connection) ;
+            	//cad = connectAndSelect();
+                respApdu = sendApduToCard(CLA_APPLET, INS_ECHO, (byte)0x00, (byte)0x00, cad);
+                System.out.println(respApdu);
+            	break ;
             case 4 :
             	
             	// ********************************************
@@ -103,98 +144,194 @@ public class clientMain {
             	// ********************************************
             	
         		//handleDisplayUsers(connection);
-            	cad = connectAndSelect();
-                respApdu = sendApduToCard(CLA_APPLET, INS_SC_RSA_CARD_PUBLIC_MOD, (byte)0x00, (byte)0x00, cad);
-            	System.out.println(respApdu);
-            	cad.powerDown();
+            	//cad = connectAndSelect();
+//                respApdu = sendApduToCard(CLA_APPLET, INS_SC_RSA_CARD_PUBLIC_MOD, (byte)0x00, (byte)0x00, cad);
+//            	System.out.println(respApdu);
+            	byte[] data = {
+        				(byte) 0x2B, (byte) 0x7E, (byte) 0x15, (byte) 0x16,
+        			    (byte) 0x28, (byte) 0xAE, (byte) 0xD2, (byte) 0xA6,
+        			    (byte) 0xAB, (byte) 0xF7, (byte) 0x97, (byte) 0x67,
+        			    (byte) 0x76, (byte) 0x5D, (byte) 0x2E, (byte) 0x47
+        			};
+            	byte[] KeyValue = {
+    					(byte) 0x2B, (byte) 0x7E, (byte) 0x15, (byte) 0x16,
+    				    (byte) 0x28, (byte) 0xAE, (byte) 0xD2, (byte) 0xA6,
+    				    (byte) 0xAB, (byte) 0xF7, (byte) 0x97, (byte) 0x67,
+    				    (byte) 0x76, (byte) 0x5D, (byte) 0x2E, (byte) 0x47
+    			};
+            	System.out.println("Cipher:");
+            	DH.printByteArray(AesCBC.encrypt_CBC(data, KeyValue));
+            	System.out.println("Plain:");
+            	DH.printByteArray(AesCBC.decrypt_CBC(AesCBC.encrypt_CBC(data, KeyValue), KeyValue));
+            	//cad.powerDown();
                 
             	break;
-            
+            	
             // tests
             case 5:
-            	System.out.print("base: ");
-                Integer base = myObj.nextInt() ;
-                System.out.print("\n");
-
-                System.out.print("power: ");
-                Integer power = myObj.nextInt() ;
-                System.out.print("\n");
-
-                System.out.print("modular: ");
-                Integer mod = myObj.nextInt() ;
-                System.out.print("\n");
-                
-                byte[] baseArray = BigInteger.valueOf(base).toByteArray();
-                byte[] powerArray = BigInteger.valueOf(power).toByteArray();
-                byte[] modArray = BigInteger.valueOf(mod).toByteArray();
-                byte[] result = DH.modularExponentiation(baseArray, powerArray, modArray);
-                System.out.println("base: " + baseArray[0] + "power: " + powerArray[0] + "mod: " + modArray[0]  + "result: " + result[0]);
-                break;
+            	
+                respApdu = sendApduToCard(CLA_APPLET, INS_CS_ENC_AES, (byte)0x00, (byte)0x00, cad);
+                System.out.println(respApdu);
+                respApdu = sendApduToCard(CLA_APPLET, INS_CS_DEC_AES, (byte)0x00, (byte)0x00, cad);
+                System.out.println(respApdu);
+            	
+    			
+            	break;
+            	
             case 6 :
                 handleExit(connection) ;
                 break;
+
             
             case 7: 
             	// authentication
             	// generation of DH public key
-            	byte[] P = DH.generateRandomPrime(1024).toByteArray();
+            	byte[] P = DH.generateRandomPrime(512).toByteArray();
+            	System.out.println("<< P >> generated -------------------: ");
+            	DH.printByteArray(P);
             	
             	// **************************** CLIENT terminal *************************************
             	
             	// send P to the card and get the A
-            	cad = connectAndSelect();
             	
             	respApdu = sendApduToCard(CLA_APPLET, INS_CS_DH_PUBLIC_KEY, (byte)0x00, (byte)0x00, P, cad);
+            	System.out.println("<< P >> sent to card --------------");
+            	System.out.println("\n\n");
             	// retreiving A = g^^n mod P
+            	//byte[] A = respApdu.dataOut;*
+            	byte[] n = respApdu.dataOut;
+            	System.out.println("<< n >> received from card --------------");
+            	DH.printByteArray(n);
+            	System.out.println("\n\n");
+            	byte[] A = getA(P, n);
+            	System.out.println("<< A >> received from card ( not really ) --------------");
+            	DH.printByteArray(A);
+            	System.out.println("\n\n");
+            	// getting card number
+            	respApdu = sendApduToCard(CLA_APPLET, INS_GET_UID, (byte)0x00, (byte)0x00, cad);
+            	long cardNumber = DH.byteArrayToLong(respApdu.dataOut);
+            	System.out.println("<< card UID >> received from card --------------");
+            	System.out.println(cardNumber);
+            	System.out.println("\n\n");
+
             	            	
             	// **************************** SERVER ***********************************
             	
             	// generate random private m
-            	byte[] m = DH.generateRandom(1024).toByteArray();
+            	byte[] m = DH.generateRandom(512).toByteArray();
+            	System.out.println("<< m >> generated -------------------: ");
+            	DH.printByteArray(m);
+            	System.out.println("\n\n");
+            	
             	byte[] B = DH.modularExponentiation(G, m, P);
-            	// getting the A from the card
-            	//byte[] A = respApdu.dataOut;
+            	System.out.println("<< B >> generated -------------------: ");
+            	DH.printByteArray(B);
+            	System.out.println("\n\n");
             	
-            	// simulating the A
-            	byte[] n = DH.generateRandom(1024).toByteArray();
-            	byte[] A = DH.modularExponentiation(G, n, P);
+            	// find AES key
+            	byte[] K = DH.modularExponentiation(A, m, P);
+            	System.out.println("<< K (server) >> generated -------------------: ");
+            	DH.printByteArray(K);
+            	K = DH.masqueFunction(K);
+            	System.out.println("<< K (server) >> masque function applied -------------------: ");
+            	DH.printByteArray(K);
+            	System.out.println("\n\n");
             	
+            	// signature
+            	byte[] privateKey = MyJDBC.getClientData(connection, cardNumber).getServerPrivateKey();
+            	byte[][] concatenatedPrivateKey= RSAOps.separateNAndD(privateKey, MODULUS_SIZE);
+
+            	// concatenate A and B to be signed
+            	byte[] AB = DH.concat(A, B);
+            	System.out.println("<< A and B >> concatenated -------------------: ");
+            	DH.printByteArray(AB);
+            	System.out.println("\n\n");
+            	
+            	
+            	byte[] sign = DH.signData(AB, RSAOps.createPrivateKey(concatenatedPrivateKey[0], concatenatedPrivateKey[1]));
+            	//byte[] sign = DH.signData(data, RSAOps.createPrivateKey(serverPrivMod, serverPrivExp));
+            	System.out.println("<< Signature >> generated -------------------: ");
+            	DH.printByteArray(sign);
+            	sign = AesCBC.encrypt_CBC(sign, K);
+            	System.out.println("<< Signature >> encrypted in AES -------------------: ");
+            	DH.printByteArray(sign);
+            	System.out.println("\n\n");
+            	// signature encryption using AES 
+
             	
             	// sending B to the card
-            	Apdu respApdu2 = sendApduToCard(CLA_APPLET, INS_CS_DH_B, (byte)0x00, (byte)0x00, B, cad);
-            	// getting the card number from the card
-            	long cardNumber;
-            	System.out.println("card heeeere: apdu: ");
-            	System.out.println(respApdu2);
-            	cardNumber = DH.byteArrayToLong(respApdu.dataOut);
+            	respApdu = sendApduToCard(CLA_APPLET, INS_CS_DH_B, (byte)0x00, (byte)0x00, B, cad);
+            	System.out.println("<< B >> sent to card --------------");
+            	System.out.println("\n\n");
             	
-            	System.out.println("card UID: " + cardNumber);
-            	System.out.println("the m: ");
-            	DH.printByteArray(m);
-            	System.out.println("the B: ");
-            	DH.printByteArray(B);
-            	System.out.println("the A: ");
-            	DH.printByteArray(A);
-            	System.out.println("the P: ");
-            	DH.printByteArray(P);
+            	// this is supposed to be calculated within the card
+            	byte[] K2 = DH.modularExponentiation(B, n, P);
+            	System.out.println("<< K (card) >> generated -------------------: ");
+            	K2 = DH.masqueFunction(K2);
+            	System.out.println("<< K (card) >> masque function applied -------------------: ");
+            	DH.printByteArray(K2);
+            	respApdu = sendApduToCard(CLA_APPLET, INS_CS_DH_K, (byte)0x00, (byte)0x00, K2, cad);
+            	System.out.println("<< K >> sent -------------------: ");
+            	System.out.println("\n\n");
+            	
+            	// sending the signature to the card
+            	respApdu = sendApduToCard(CLA_APPLET, INS_CS_DH_SIGN, (byte)0x00, (byte)0x00, sign, cad);
+            	System.out.println("<< Signature >> sent to card --------------");
+            	System.out.println("\n\n");
+            	
+
+            	respApdu = sendApduToCard(CLA_APPLET, INS_SC_SIGN_STATUS, (byte)0x00, (byte)0x00, cad);
+            	boolean isVerified1 = (respApdu.dataOut[0] == (byte)0x60);
+            	System.out.println("<< Signature Verification >> in the card -------------->>>  " + isVerified1);
+            	System.out.println("\n\n");
+
+
+            	
+            	// verifying the signature of the card
+            	respApdu = sendApduToCard(CLA_APPLET, INS_SC_DH_SIGN, (byte)0x00, (byte)0x00, cad);
+            	sign = respApdu.dataOut;
+            	System.out.println("<< Encrypted Signature >> received from card --------------");
+            	DH.printByteArray(sign);
+            	
+            	// decrypting the signature from AES 128
+            	sign = AesCBC.decrypt_CBC(sign, K);
+            	System.out.println("<< Decrypted Signature >> --------------");
+            	DH.printByteArray(sign);
+            	System.out.println("\n\n");
+            	
+            	// verification
+            	byte[] publicKey1 = MyJDBC.getClientData(connection, cardNumber).getPublicKey();
+            	byte[][] concatenatedPublicKey= RSAOps.separateNAndD(publicKey1, MODULUS_SIZE);
+            	boolean isVerified2 = DH.verifySignature(AB, sign, RSAOps.createPublicKey(concatenatedPublicKey[0], concatenatedPublicKey[1]));
+            	System.out.println("<< Signature Verification >> in the server --------------: " + isVerified2);
+            	System.out.println("\n\n");
+//            	System.out.println("<< K >> received -------------------: ");
+//            	respApdu = sendApduToCard(CLA_APPLET, INS_SC_DH_K, (byte)0x00, (byte)0x00, cad);
+//            	K2 = respApdu.dataOut; 
+//            	DH.printByteArray(K2);
+            	// getting the card number from the card
+
+
+            	
+            	
             	
             	// create digital signature for A and B
             	
             	// getting private key modulus and exponent from the data base
-            	byte[] privateKey = MyJDBC.getClientData(connection, cardNumber).getServerPrivateKey();
-            	byte[][] concatenatedPrivateKey= RSAOps.separateNAndD(privateKey, MODULUS_SIZE); 
-            
-            	// start signing
-            	byte[] sign = DH.signData(addArrays(A, B), RSAOps.createPrivateKey(concatenatedPrivateKey[0], concatenatedPrivateKey[1]));
+            	// error to fix heeeeeeeeeeeeeeeeeeeeere
+            	//Client client2 = MyJDBC.getClientData(connection, cardNumber);
+            	//System.out.println("heere our client: " + client2);
+            	//String valueAsString = "6208778557861222465";
+                //long longValue = Long.parseLong(valueAsString);
+
+
+            	// here you should get the server public key of the server from the card
+//            	byte[] modulusBytes = sendApduToCard(CLA_APPLET, INS_GET_SERVER_PUB_MOD, (byte)0x00, (byte)0x00, cad).dataOut;
+//            	byte[] publicExponentBytes = sendApduToCard(CLA_APPLET, INS_GET_SERVER_PUB_EXP, (byte)0x00, (byte)0x00, cad).dataOut;
+//            	boolean isVerified = DH.verifySignature(A, sign, RSAOps.createPublicKey(modulusBytes, publicExponentBytes));
+//            	System.out.println("<< Signature is verified >>-------------------: " + isVerified);
             	
-            	// find AES key
-            	byte[] K = DH.modularExponentiation(A, m, P);
-            	
-            	
-            	
-            	
-            	
-            	
+  	
             	break;
             
         }
@@ -225,11 +362,11 @@ public class clientMain {
 
         // saving information to the database ------------------------------------------------------------
         
-        cad = connectAndSelect();
+        
 
         // generating rsa keys ----------------------------------------------------
 		// card keys
-		RSAOps cardRSA = new RSAOps(1024);
+		RSAOps cardRSA = new RSAOps(512);
 		// private
 		byte[] cardPrivateExp = cardRSA.getPrivateKeyExponent();
 		byte[] cardPrivateP = cardRSA.getPrivateKeyP();
@@ -243,15 +380,17 @@ public class clientMain {
 		
 		
 		// server keys
-		RSAOps serverRSA = new RSAOps(1024);
+		RSAOps serverRSA = new RSAOps(512);
 		// private
 		byte[] serverPrivateExp = serverRSA.getPrivateKeyExponent();
 		byte[] serverPrivateMod = serverRSA.getPrivateKeyMod();
+
 		byte[] serverPrivateP = serverRSA.getPrivateKeyP();
 		byte[] serverPrivateQ = serverRSA.getPrivateKeyQ();
 		// public
 		byte[] serverPublicExp = serverRSA.getPublicKeyExponent();
 		byte[] serverPublicMod = serverRSA.getPublicKeyMod();
+
 		
         //sending keys to the card
 		respApdu = sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PRIVATE_EXP, (byte)0x00, (byte)0x00, cardPrivateExp, cad);
@@ -274,6 +413,10 @@ public class clientMain {
 		
 		
         // saving all information to the database
+		System.out.println("Keys sent to card successfully!!");
+		
+		
+        // saving all information to the database
         Client client = new Client(userCardNumber,userFirstName , userLastName , useraddress) ;
         // setting the keys
         client.setExpiringDate();
@@ -282,11 +425,8 @@ public class clientMain {
         MyJDBC.addClient(connection,client);
         
         // saving information to the smart card-------------------------------------------------------------
-        
         System.out.println("User was added successfully");
         
-        // shutdown the card
-        cad.powerDown();
         
 
     }
@@ -470,6 +610,17 @@ public class clientMain {
 
         return result;
     }
+	
+	public static byte[] getA(byte[] P, byte[]n) throws IOException, CadTransportException{
+		
+			
+		byte[] A = DH.modularExponentiation(G, n, P);
+		respApdu = sendApduToCard(CLA_APPLET, INS_CS_A, (byte)0x00, (byte)0x00, A, cad);
+		if(respApdu.getStatus() != 0x9000){
+			System.out.println("Couldn't send the A to the card");
+		}
+		return A;
+	}
 	
 	
 	

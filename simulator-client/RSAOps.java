@@ -6,6 +6,7 @@ import java.security.interfaces.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
@@ -136,6 +137,17 @@ public class RSAOps {
 
         // Generate private key from RSAPrivateKeySpec
         return keyFactory.generatePrivate(privateKeySpec);
+    }
+	
+	public static PublicKey createPublicKey(byte[] modulusBytes, byte[] publicExponentBytes) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        // Create RSAPrivateKeySpec with modulus and private exponent byte arrays
+        RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(new BigInteger(1, modulusBytes), new BigInteger(1, publicExponentBytes));
+
+        // Get RSA key factory instance
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+        // Generate private key from RSAPrivateKeySpec
+        return keyFactory.generatePublic(publicKeySpec);
     }
 	
 	// separate the d and the n in private key 
