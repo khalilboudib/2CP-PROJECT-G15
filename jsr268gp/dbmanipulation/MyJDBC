@@ -1,0 +1,806 @@
+package jsr268gp.dbmanipulation;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MyJDBC {
+    // JDBC URL for MySQL database connection
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/health_care_system";
+    private static final String USERNAME = "root"; // Username for database connection
+    private static final String PASSWORD = "cp2_project"; // Password for database connection
+
+    // Establish a connection to the database
+    public static Connection connectToDataBase() throws SQLException, ClassNotFoundException {
+        try {
+            // Load MySQL JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        } catch (ClassNotFoundException e) {
+            // Rethrow the exception to notify the caller about the failure
+            throw e;
+        } catch (SQLException e) {
+            // Rethrow the exception to notify the caller about the failure
+            throw e;
+        }
+    }
+    // Close database connection
+    public static void closeConnection(Connection connection) throws SQLException {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw e;
+            }
+        }
+    }
+    
+    
+ // Add a patient to the database
+    public static void addPatient(Patient patient) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "INSERT INTO PATIENTS (FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, EMAIL, ADDRESS, PHONE_NUMBER, CHRONIC_DISEASES, HASHED_PASSWORD, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, OCCUPATION, MARITAL_STATUS, ALLERGIES, PREVIOUS_SURGERIES, FAMILY_MEDICAL_HISTORY, BLOOD_TYPE, HEIGHT, WEIGHT, DISABILITIES, SOCIAL_SECURITY_NUMBER , PATIENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the statement parameters for the patient data
+            setPatientStatement(statement, patient);
+            // Execute the update to add the patient to the database
+            statement.executeUpdate();
+            // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    // Set the statement parameters for adding a patient
+    private static void setPatientStatement(PreparedStatement statement, Patient patient) throws SQLException {
+        try {
+            // Set each parameter of the prepared statement with patient data
+        	statement.setString(1, patient.getFirstName());
+            statement.setString(2, patient.getLastName());
+            statement.setByte(3, (byte)(patient.getGender() ? 1 : 0));
+            statement.setString(4, patient.getPicture());
+            statement.setDate(5, patient.getDateOfBirth());
+            statement.setString(6, patient.getNationalId());
+            statement.setString(7, patient.getEmail());
+            statement.setString(8, patient.getAddress());
+            statement.setString(9, patient.getPhoneNumber());
+            statement.setString(10, patient.getChronicDiseases());
+            statement.setString(11, patient.getHashedPassword());
+            statement.setDate(12, patient.getCardExpiringDate());
+            statement.setBytes(13, patient.getUserPublicKey());
+            statement.setBytes(14, patient.getServerPrivateKey());
+            statement.setString(15, patient.getEmergencyContactName());
+            statement.setString(16, patient.getEmergencyContactPhone());
+            statement.setString(17, patient.getOccupation());
+            statement.setString(18, patient.getMaritalStatus());
+            statement.setString(19, patient.getAllergies());
+            statement.setString(20, patient.getPreviousSurgeries());
+            statement.setString(21, patient.getFamilyMedicalHistory());
+            statement.setString(22, patient.getBloodType());
+            statement.setBigDecimal(23, patient.getHeight());
+            statement.setBigDecimal(24, patient.getWeight());
+            statement.setString(25, patient.getDisabilities());
+            statement.setString(26, patient.getSocialSecurityNumber());
+            statement.setLong(27, patient.getPatientId());
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    
+    public static void addDoctor(Doctor doctor) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "INSERT INTO DOCTORS (DOCTOR_ID, FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, ABOUT, EMAIL, ADDRESS, PHONE_NUMBER, HASHED_PASSWORD, CLINIQUE_ID, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the statement parameters for the doctor data
+            setDoctorStatement(statement, doctor);
+            // Execute the update to add the doctor to the database
+            statement.executeUpdate();
+         // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    // Set the statement parameters for adding a doctor
+    private static void setDoctorStatement(PreparedStatement statement, Doctor doctor) throws SQLException {
+        try {
+            // Set each parameter of the prepared statement with doctor data
+            statement.setLong(1, doctor.getDoctorId());
+            statement.setString(2, doctor.getFirstName());
+            statement.setString(3, doctor.getLastName());
+            statement.setBoolean(4, doctor.getGender());
+            statement.setString(5, doctor.getPicture());
+            statement.setDate(6, doctor.getDateOfBirth());
+            statement.setString(7, doctor.getNationalId());
+            statement.setString(8, doctor.getAbout());
+            statement.setString(9, doctor.getEmail());
+            statement.setString(10, doctor.getAddress());
+            statement.setString(11, doctor.getPhoneNumber());
+            statement.setString(12, doctor.getHashedPassword());
+            statement.setInt(13, doctor.getCliniqueId());
+            statement.setDate(14, doctor.getCardExpiringDate());
+            statement.setBytes(15, doctor.getUserPublicKey());
+            statement.setBytes(16, doctor.getServerPrivateKey());
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    public static void addAdmin(Admin admin) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "INSERT INTO ADMINS (ADMIN_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, ADDRESS, HASHED_PASSWORD, DATE_OF_BIRTH, NATIONAL_ID, GENDER, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the statement parameters for the admin data
+            setAdminStatement(statement, admin);
+            // Execute the update to add the admin to the database
+            statement.executeUpdate();
+         // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    // Set the statement parameters for adding an admin
+    private static void setAdminStatement(PreparedStatement statement, Admin admin) throws SQLException {
+        try {
+            // Set each parameter of the prepared statement with admin data
+            statement.setLong(1, admin.getAdminId());
+            statement.setString(2, admin.getFirstName());
+            statement.setString(3, admin.getLastName());
+            statement.setString(4, admin.getEmail());
+            statement.setString(5, admin.getPhoneNumber());
+            statement.setString(6, admin.getAddress());
+            statement.setString(7, admin.getHashedPassword());
+            statement.setDate(8, admin.getDateOfBirth());
+            statement.setString(9, admin.getNationalId());
+            statement.setBoolean(10, admin.getGender());
+            statement.setString(11, admin.getEmergencyContactName());
+            statement.setString(12, admin.getEmergencyContactPhone());
+            statement.setDate(13, admin.getCardExpiringDate());
+            statement.setBytes(14, admin.getUserPublicKey());
+            statement.setBytes(15, admin.getServerPrivateKey());
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    
+    public static void addPatientToRecycleBin(Patient patient) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "INSERT INTO PATIENTS_DELETED (FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, EMAIL, ADDRESS, PHONE_NUMBER, CHRONIC_DISEASES, HASHED_PASSWORD, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, OCCUPATION, MARITAL_STATUS, ALLERGIES, PREVIOUS_SURGERIES, FAMILY_MEDICAL_HISTORY, BLOOD_TYPE, HEIGHT, WEIGHT, DISABILITIES, SOCIAL_SECURITY_NUMBER,PATIENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the statement parameters for the patient data
+            setPatientStatement(statement, patient);
+            // Execute the update to add the removed patient to the database
+            statement.executeUpdate();
+            // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    public static void addDoctorToRecycleBin(Doctor doctor) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "INSERT INTO DOCTORS_DELETED (DOCTOR_ID, FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, ABOUT, EMAIL, ADDRESS, PHONE_NUMBER, HASHED_PASSWORD, CLINIQUE_ID, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the statement parameters for the doctor data
+            setDoctorStatement(statement, doctor);
+            // Execute the update to add the doctor to the database
+            statement.executeUpdate();
+         // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    public static void addAdminToRecyleBin(Admin admin) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "INSERT INTO ADMINS_DELETED (ADMIN_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, ADDRESS, HASHED_PASSWORD, DATE_OF_BIRTH, NATIONAL_ID, GENDER, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the statement parameters for the admin data
+            setAdminStatement(statement, admin);
+            // Execute the update to add the admin to the database
+            statement.executeUpdate();
+         // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    
+ // Delete client from database
+    public static void deletePatient(Patient patient) throws SQLException, ClassNotFoundException {
+    	Connection connection = null;
+    	// get connection to the data base
+		try {
+			connection = connectToDataBase();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			throw e1;
+		}
+        String sqlQuery = "delete from patients where PATIENT_ID= ? ";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the placeholder to patient card number
+            statement.setLong(1, patient.getPatientId());
+            // Execute the update to delete the patient from the database
+            statement.executeUpdate();
+            // add patient to the table of deleted patients
+            addPatientToRecycleBin(patient);
+         // close connection to data base
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    public static void deleteDoctor(Doctor doctor) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "DELETE FROM DOCTORS WHERE DOCTOR_ID = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the placeholder to doctor ID
+            statement.setLong(1, doctor.getDoctorId());
+            // Execute the update to delete the doctor from the database
+            statement.executeUpdate();
+            // add doctor to deleted doctors table
+            addDoctorToRecycleBin(doctor);
+            // close connection to database
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+
+    public static void deleteAdmin(Admin admin) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "DELETE FROM ADMINS WHERE ADMIN_ID = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            // Set the placeholder to admin ID
+            statement.setLong(1, admin.getAdminId());
+            // Execute the update to delete the admin from the database
+            statement.executeUpdate();
+            // add admin to deleted admins table
+            addAdminToRecyleBin(admin);
+            // close connection to database
+            closeConnection(connection);
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    
+    public static Patient searchPatientById(long patientId) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = connectToDataBase();
+            
+            // First, check if the patient exists in the active patients table
+            String sqlQuery1 = "SELECT * FROM PATIENTS WHERE PATIENT_ID = ?";
+            statement = connection.prepareStatement(sqlQuery1);
+            statement.setLong(1, patientId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // If found in active patients table, extract patient data and return
+                Patient patient = extractPatientFromResultSet(resultSet);
+                return patient;
+            } else {
+                // Close resources related to the first query
+                resultSet.close();
+                statement.close();
+                
+                // If not found in active patients table, check in deleted patients table
+                String sqlQuery2 = "SELECT * FROM PATIENTS_DELETED WHERE PATIENT_ID = ?";
+                statement = connection.prepareStatement(sqlQuery2);
+                statement.setLong(1, patientId);
+                resultSet = statement.executeQuery();
+                
+                if (resultSet.next()) {
+                    // If found in deleted patients table, extract patient data and return
+                    Patient patient = extractPatientFromResultSet(resultSet);
+                    return patient;
+                } else {
+                    // If not found in deleted patients table as well, return null
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw e; // Rethrow the exception
+        } finally {
+            // Close resources in finally block
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            closeConnection(connection);
+        }
+    }
+
+    
+    
+    public static Boolean DoesPatientExist(long patientId) throws ClassNotFoundException, SQLException{
+    	return (searchPatientById(patientId)!=null);
+    }
+    
+    
+    public static List<Patient> searchPatientByFirstName(String firstName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM PATIENTS WHERE FIRST_NAME = ?";
+        List<Patient> patients = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, firstName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract patient data from the result set and add to the list
+                    patients.add(extractPatientFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return patients;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    
+    public static List<Patient> searchPatientByLastName(String lastName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM PATIENTS WHERE LAST_NAME = ?";
+        List<Patient> patients = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract patient data from the result set and add to the list
+                    patients.add(extractPatientFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return patients;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    
+    public static List<Patient> searchPatientByFullName(String firstName, String lastName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM PATIENTS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
+        List<Patient> patients = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract patient data from the result set and add to the list
+                    patients.add(extractPatientFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return patients;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+    
+    private static Patient extractPatientFromResultSet(ResultSet resultSet) throws SQLException {
+        Patient patient = new Patient();
+        patient.setPatientId(resultSet.getLong("PATIENT_ID"));
+        patient.setFirstName(resultSet.getString("FIRST_NAME"));
+        patient.setLastName(resultSet.getString("LAST_NAME"));
+        patient.setGender(resultSet.getBoolean("GENDER"));
+        patient.setPicture(resultSet.getString("PICTURE"));
+        patient.setDateOfBirth(resultSet.getDate("DATE_OF_BIRTH"));
+        patient.setNationalId(resultSet.getString("NATIONAL_ID"));
+        patient.setEmail(resultSet.getString("EMAIL"));
+        patient.setAddress(resultSet.getString("ADDRESS"));
+        patient.setPhoneNumber(resultSet.getString("PHONE_NUMBER"));
+        patient.setChronicDiseases(resultSet.getString("CHRONIC_DISEASES"));
+        patient.setHashedPassword(resultSet.getString("HASHED_PASSWORD"));
+        patient.setCardExpiringDate(resultSet.getDate("CARD_EXPIRING_DATE"));
+        patient.setUserPublicKey(resultSet.getBytes("USER_PUBLIC_KEY"));
+        patient.setServerPrivateKey(resultSet.getBytes("SERVER_PRIVATE_KEY"));
+        patient.setEmergencyContactName(resultSet.getString("EMERGENCY_CONTACT_NAME"));
+        patient.setEmergencyContactPhone(resultSet.getString("EMERGENCY_CONTACT_PHONE"));
+        patient.setOccupation(resultSet.getString("OCCUPATION"));
+        patient.setMaritalStatus(resultSet.getString("MARITAL_STATUS"));
+        patient.setAllergies(resultSet.getString("ALLERGIES"));
+        patient.setPreviousSurgeries(resultSet.getString("PREVIOUS_SURGERIES"));
+        patient.setFamilyMedicalHistory(resultSet.getString("FAMILY_MEDICAL_HISTORY"));
+        patient.setBloodType(resultSet.getString("BLOOD_TYPE"));
+        patient.setHeight(resultSet.getBigDecimal("HEIGHT"));
+        patient.setWeight(resultSet.getBigDecimal("WEIGHT"));
+        patient.setDisabilities(resultSet.getString("DISABILITIES"));
+        patient.setSocialSecurityNumber(resultSet.getString("SOCIAL_SECURITY_NUMBER"));
+        return patient;
+    }
+    
+    
+    public static Doctor searchDoctorById(long doctorId) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = connectToDataBase();
+
+            // First, check if the doctor exists in the doctors table
+            String sqlQuery = "SELECT * FROM DOCTORS WHERE DOCTOR_ID = ?";
+            statement = connection.prepareStatement(sqlQuery);
+            statement.setLong(1, doctorId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // If found in the doctors table, extract doctor data and return
+                Doctor doctor = extractDoctorFromResultSet(resultSet);
+                return doctor;
+            } else {
+                // If not found, return null
+                return null;
+            }
+        } catch (SQLException e) {
+            throw e; // Rethrow the exception
+        } finally {
+            // Close resources in finally block
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            closeConnection(connection);
+        }
+    }
+    
+    public static Boolean DoesDoctorExist(long doctorId) throws ClassNotFoundException, SQLException{
+    	return (searchDoctorById(doctorId)!=null);
+    }
+
+
+    
+    public static List<Doctor> searchDoctorByFirstName(String firstName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM DOCTORS WHERE FIRST_NAME = ?";
+        List<Doctor> doctors = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, firstName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract doctor data from the result set and add to the list
+                    doctors.add(extractDoctorFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return doctors;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    
+    public static List<Doctor> searchDoctorByLastName(String lastName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM DOCTORS WHERE LAST_NAME = ?";
+        List<Doctor> doctors = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract doctor data from the result set and add to the list
+                    doctors.add(extractDoctorFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return doctors;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    
+    public static List<Doctor> searchDoctorByFullName(String firstName, String lastName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM DOCTORS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
+        List<Doctor> doctors = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract doctor data from the result set and add to the list
+                    doctors.add(extractDoctorFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return doctors;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    
+    
+    private static Doctor extractDoctorFromResultSet(ResultSet resultSet) throws SQLException {
+        Doctor doctor = new Doctor();
+        doctor.setDoctorId(resultSet.getLong("DOCTOR_ID"));
+        doctor.setFirstName(resultSet.getString("FIRST_NAME"));
+        doctor.setLastName(resultSet.getString("LAST_NAME"));
+        doctor.setGender(resultSet.getBoolean("GENDER"));
+        doctor.setPicture(resultSet.getString("PICTURE"));
+        doctor.setDateOfBirth(resultSet.getDate("DATE_OF_BIRTH"));
+        doctor.setNationalId(resultSet.getString("NATIONAL_ID"));
+        doctor.setAbout(resultSet.getString("ABOUT"));
+        doctor.setEmail(resultSet.getString("EMAIL"));
+        doctor.setAddress(resultSet.getString("ADDRESS"));
+        doctor.setPhoneNumber(resultSet.getString("PHONE_NUMBER"));
+        doctor.setHashedPassword(resultSet.getString("HASHED_PASSWORD"));
+        doctor.setCliniqueId(resultSet.getInt("CLINIQUE_ID"));
+        doctor.setCardExpiringDate(resultSet.getDate("CARD_EXPIRING_DATE"));
+        doctor.setUserPublicKey(resultSet.getBytes("USER_PUBLIC_KEY"));
+        doctor.setServerPrivateKey(resultSet.getBytes("SERVER_PRIVATE_KEY"));
+        return doctor;
+    }
+    
+    
+    public static Admin searchAdminById(long adminId) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = connectToDataBase();
+
+            // First, check if the admin exists in the admins table
+            String sqlQuery = "SELECT * FROM ADMINS WHERE ADMIN_ID = ?";
+            statement = connection.prepareStatement(sqlQuery);
+            statement.setLong(1, adminId);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // If found in the admins table, extract admin data and return
+                Admin admin = extractAdminFromResultSet(resultSet);
+                return admin;
+            } else {
+                // If not found, return null
+                return null;
+            }
+        } catch (SQLException e) {
+            throw e; // Rethrow the exception
+        } finally {
+            // Close resources in finally block
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            closeConnection(connection);
+        }
+    }
+    
+    public static Boolean DoesAdminExist(long adminId) throws ClassNotFoundException, SQLException{
+    	return (searchAdminById(adminId)!=null);
+    }
+
+
+    
+    
+    public static List<Admin> searchAdminByFirstName(String firstName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM ADMINS WHERE FIRST_NAME = ?";
+        List<Admin> admins = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, firstName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract admin data from the result set and add to the list
+                    admins.add(extractAdminFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return admins;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    
+    public static List<Admin> searchAdminByLastName(String lastName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM ADMINS WHERE LAST_NAME = ?";
+        List<Admin> admins = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract admin data from the result set and add to the list
+                    admins.add(extractAdminFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return admins;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    
+    public static List<Admin> searchAdminByFullName(String firstName, String lastName) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        try {
+            connection = connectToDataBase();
+        } catch (ClassNotFoundException e1) {
+            throw e1;
+        }
+        String sqlQuery = "SELECT * FROM ADMINS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
+        List<Admin> admins = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    // Extract admin data from the result set and add to the list
+                    admins.add(extractAdminFromResultSet(resultSet));
+                }
+            }
+            // close connection to database
+            closeConnection(connection);
+            return admins;
+        } catch (SQLException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        }
+    }
+
+    
+    private static Admin extractAdminFromResultSet(ResultSet resultSet) throws SQLException {
+        Admin admin = new Admin();
+        admin.setAdminId(resultSet.getLong("ADMIN_ID"));
+        admin.setFirstName(resultSet.getString("FIRST_NAME"));
+        admin.setLastName(resultSet.getString("LAST_NAME"));
+        admin.setEmail(resultSet.getString("EMAIL"));
+        admin.setPhoneNumber(resultSet.getString("PHONE_NUMBER"));
+        admin.setAddress(resultSet.getString("ADDRESS"));
+        admin.setHashedPassword(resultSet.getString("HASHED_PASSWORD"));
+        admin.setDateOfBirth(resultSet.getDate("DATE_OF_BIRTH"));
+        admin.setNationalId(resultSet.getString("NATIONAL_ID"));
+        admin.setGender(resultSet.getBoolean("GENDER"));
+        admin.setEmergencyContactName(resultSet.getString("EMERGENCY_CONTACT_NAME"));
+        admin.setEmergencyContactPhone(resultSet.getString("EMERGENCY_CONTACT_PHONE"));
+        admin.setCardExpiringDate(resultSet.getDate("CARD_EXPIRING_DATE"));
+        admin.setUserPublicKey(resultSet.getBytes("USER_PUBLIC_KEY"));
+        admin.setServerPrivateKey(resultSet.getBytes("SERVER_PRIVATE_KEY"));
+        return admin;
+    }    
+}
+
