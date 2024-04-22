@@ -34,30 +34,87 @@ public class MyJDBC {
         }
     }
     
+ // Method to close database resources
+    private static void closeResources(Connection connection, PreparedStatement statement) throws SQLException {
+        SQLException exception = null;
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                exception = e;
+            }
+        }
+        if (connection != null) {
+            try {
+                closeConnection(connection);
+            } catch (SQLException e) {
+                exception = e;
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
+    }
+    
+    
+ // Method to close database resources
+    private static void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet) throws SQLException {
+        SQLException exception = null;
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                exception = e;
+            }
+        }
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                exception = e;
+            }
+        }
+        if (connection != null) {
+            try {
+                closeConnection(connection);
+            } catch (SQLException e) {
+                exception = e;
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
+    }
+
+
+    
     
  // Add a patient to the database
     public static void addPatient(Patient patient) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "INSERT INTO PATIENTS (FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, EMAIL, ADDRESS, PHONE_NUMBER, CHRONIC_DISEASES, HASHED_PASSWORD, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, OCCUPATION, MARITAL_STATUS, ALLERGIES, PREVIOUS_SURGERIES, FAMILY_MEDICAL_HISTORY, BLOOD_TYPE, HEIGHT, WEIGHT, DISABILITIES, SOCIAL_SECURITY_NUMBER , PATIENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "INSERT INTO PATIENTS (FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, EMAIL, ADDRESS, PHONE_NUMBER, CHRONIC_DISEASES, HASHED_PASSWORD, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, OCCUPATION, MARITAL_STATUS, ALLERGIES, PREVIOUS_SURGERIES, FAMILY_MEDICAL_HISTORY, BLOOD_TYPE, HEIGHT, WEIGHT, DISABILITIES, SOCIAL_SECURITY_NUMBER, PATIENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the statement parameters for the patient data
             setPatientStatement(statement, patient);
+
             // Execute the update to add the patient to the database
             statement.executeUpdate();
-            // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
 
     // Set the statement parameters for adding a patient
     private static void setPatientStatement(PreparedStatement statement, Patient patient) throws SQLException {
@@ -97,28 +154,32 @@ public class MyJDBC {
     }
     
     
+ // Add a doctor to the database
     public static void addDoctor(Doctor doctor) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "INSERT INTO DOCTORS (DOCTOR_ID, FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, ABOUT, EMAIL, ADDRESS, PHONE_NUMBER, HASHED_PASSWORD, CLINIQUE_ID, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "INSERT INTO DOCTORS (DOCTOR_ID, FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, ABOUT, EMAIL, ADDRESS, PHONE_NUMBER, HASHED_PASSWORD, CLINIQUE_ID, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the statement parameters for the doctor data
             setDoctorStatement(statement, doctor);
+
             // Execute the update to add the doctor to the database
             statement.executeUpdate();
-         // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
 
     // Set the statement parameters for adding a doctor
     private static void setDoctorStatement(PreparedStatement statement, Doctor doctor) throws SQLException {
@@ -146,28 +207,32 @@ public class MyJDBC {
         }
     }
     
+ // Add an admin to the database
     public static void addAdmin(Admin admin) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "INSERT INTO ADMINS (ADMIN_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, ADDRESS, HASHED_PASSWORD, DATE_OF_BIRTH, NATIONAL_ID, GENDER, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "INSERT INTO ADMINS (ADMIN_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, ADDRESS, HASHED_PASSWORD, DATE_OF_BIRTH, NATIONAL_ID, GENDER, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the statement parameters for the admin data
             setAdminStatement(statement, admin);
+
             // Execute the update to add the admin to the database
             statement.executeUpdate();
-         // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
 
     // Set the statement parameters for adding an admin
     private static void setAdminStatement(PreparedStatement statement, Admin admin) throws SQLException {
@@ -195,200 +260,216 @@ public class MyJDBC {
     }
     
     
+ // Add a patient to the recycle bin in the database
     public static void addPatientToRecycleBin(Patient patient) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "INSERT INTO PATIENTS_DELETED (FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, EMAIL, ADDRESS, PHONE_NUMBER, CHRONIC_DISEASES, HASHED_PASSWORD, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, OCCUPATION, MARITAL_STATUS, ALLERGIES, PREVIOUS_SURGERIES, FAMILY_MEDICAL_HISTORY, BLOOD_TYPE, HEIGHT, WEIGHT, DISABILITIES, SOCIAL_SECURITY_NUMBER,PATIENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "INSERT INTO PATIENTS_DELETED (FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, EMAIL, ADDRESS, PHONE_NUMBER, CHRONIC_DISEASES, HASHED_PASSWORD, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, OCCUPATION, MARITAL_STATUS, ALLERGIES, PREVIOUS_SURGERIES, FAMILY_MEDICAL_HISTORY, BLOOD_TYPE, HEIGHT, WEIGHT, DISABILITIES, SOCIAL_SECURITY_NUMBER, PATIENT_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the statement parameters for the patient data
             setPatientStatement(statement, patient);
-            // Execute the update to add the removed patient to the database
+
+            // Execute the update to add the patient to the recycle bin
             statement.executeUpdate();
-            // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
+ // Add a doctor to the recycle bin in the database
     public static void addDoctorToRecycleBin(Doctor doctor) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "INSERT INTO DOCTORS_DELETED (DOCTOR_ID, FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, ABOUT, EMAIL, ADDRESS, PHONE_NUMBER, HASHED_PASSWORD, CLINIQUE_ID, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "INSERT INTO DOCTORS_DELETED (DOCTOR_ID, FIRST_NAME, LAST_NAME, GENDER, PICTURE, DATE_OF_BIRTH, NATIONAL_ID, ABOUT, EMAIL, ADDRESS, PHONE_NUMBER, HASHED_PASSWORD, CLINIQUE_ID, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the statement parameters for the doctor data
             setDoctorStatement(statement, doctor);
-            // Execute the update to add the doctor to the database
+
+            // Execute the update to add the doctor to the recycle bin
             statement.executeUpdate();
-         // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
     
+ // Add an admin to the recycle bin in the database
     public static void addAdminToRecyleBin(Admin admin) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "INSERT INTO ADMINS_DELETED (ADMIN_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, ADDRESS, HASHED_PASSWORD, DATE_OF_BIRTH, NATIONAL_ID, GENDER, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "INSERT INTO ADMINS_DELETED (ADMIN_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, ADDRESS, HASHED_PASSWORD, DATE_OF_BIRTH, NATIONAL_ID, GENDER, EMERGENCY_CONTACT_NAME, EMERGENCY_CONTACT_PHONE, CARD_EXPIRING_DATE, USER_PUBLIC_KEY, SERVER_PRIVATE_KEY) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the statement parameters for the admin data
             setAdminStatement(statement, admin);
-            // Execute the update to add the admin to the database
+
+            // Execute the update to add the admin to the recycle bin
             statement.executeUpdate();
-         // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
     
     
- // Delete client from database
+ // Delete a patient from the database
     public static void deletePatient(Patient patient) throws SQLException, ClassNotFoundException {
-    	Connection connection = null;
-    	// get connection to the data base
-		try {
-			connection = connectToDataBase();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			throw e1;
-		}
-        String sqlQuery = "delete from patients where PATIENT_ID= ? ";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            // Set the placeholder to patient card number
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get connection to the database
+            connection = connectToDataBase();
+
+            String sqlQuery = "DELETE FROM PATIENTS WHERE PATIENT_ID = ?";
+            statement = connection.prepareStatement(sqlQuery);
+
+            // Set the placeholder to patient ID
             statement.setLong(1, patient.getPatientId());
+
             // Execute the update to delete the patient from the database
             statement.executeUpdate();
-            // add patient to the table of deleted patients
+
+            // Add patient to the table of deleted patients
             addPatientToRecycleBin(patient);
-         // close connection to data base
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
     
+ // Delete a doctor from the database
     public static void deleteDoctor(Doctor doctor) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+
         try {
+            // Get connection to the database
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "DELETE FROM DOCTORS WHERE DOCTOR_ID = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+
+            String sqlQuery = "DELETE FROM DOCTORS WHERE DOCTOR_ID = ?";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the placeholder to doctor ID
             statement.setLong(1, doctor.getDoctorId());
+
             // Execute the update to delete the doctor from the database
             statement.executeUpdate();
-            // add doctor to deleted doctors table
+
+            // Add doctor to the table of deleted doctors
             addDoctorToRecycleBin(doctor);
-            // close connection to database
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
 
 
+
+ // Delete an admin from the database
     public static void deleteAdmin(Admin admin) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+
         try {
+            // Get connection to the database
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "DELETE FROM ADMINS WHERE ADMIN_ID = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+
+            String sqlQuery = "DELETE FROM ADMINS WHERE ADMIN_ID = ?";
+            statement = connection.prepareStatement(sqlQuery);
+
             // Set the placeholder to admin ID
             statement.setLong(1, admin.getAdminId());
+
             // Execute the update to delete the admin from the database
             statement.executeUpdate();
-            // add admin to deleted admins table
+
+            // Add admin to the table of deleted admins
             addAdminToRecyleBin(admin);
-            // close connection to database
-            closeConnection(connection);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             // Rethrow the exception to propagate it
             throw e;
+        } finally {
+            // Close resources in the finally block
+            closeResources(connection, statement);
         }
     }
+
     
     
     public static Patient searchPatientById(long patientId) throws SQLException, ClassNotFoundException {
         Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement1 = null;
+        PreparedStatement statement2 = null;
+        ResultSet resultSet1 = null;
+        ResultSet resultSet2 = null;
 
         try {
             connection = connectToDataBase();
-            
-            // First, check if the patient exists in the active patients table
-            String sqlQuery1 = "SELECT * FROM PATIENTS WHERE PATIENT_ID = ?";
-            statement = connection.prepareStatement(sqlQuery1);
-            statement.setLong(1, patientId);
-            resultSet = statement.executeQuery();
+            statement1 = connection.prepareStatement("SELECT * FROM PATIENTS WHERE PATIENT_ID = ?");
+            statement2 = connection.prepareStatement("SELECT * FROM PATIENTS_DELETED WHERE PATIENT_ID = ?");
 
-            if (resultSet.next()) {
-                // If found in active patients table, extract patient data and return
-                Patient patient = extractPatientFromResultSet(resultSet);
-                return patient;
-            } else {
-                // Close resources related to the first query
-                resultSet.close();
-                statement.close();
-                
-                // If not found in active patients table, check in deleted patients table
-                String sqlQuery2 = "SELECT * FROM PATIENTS_DELETED WHERE PATIENT_ID = ?";
-                statement = connection.prepareStatement(sqlQuery2);
-                statement.setLong(1, patientId);
-                resultSet = statement.executeQuery();
-                
-                if (resultSet.next()) {
-                    // If found in deleted patients table, extract patient data and return
-                    Patient patient = extractPatientFromResultSet(resultSet);
-                    return patient;
-                } else {
-                    // If not found in deleted patients table as well, return null
-                    return null;
-                }
+            statement1.setLong(1, patientId);
+            resultSet1 = statement1.executeQuery();
+            if (resultSet1.next()) {
+                return extractPatientFromResultSet(resultSet1);
             }
+
+            // If not found in active patients table, check in deleted patients table
+            statement2.setLong(1, patientId);
+            resultSet2 = statement2.executeQuery();
+            if (resultSet2.next()) {
+                return extractPatientFromResultSet(resultSet2);
+            }
+
+            // If not found in deleted patients table as well, return null
+            return null;
         } catch (SQLException e) {
-            throw e; // Rethrow the exception
+            throw new SQLException("Error searching for patient with ID " + patientId, e);
         } finally {
-            // Close resources in finally block
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (statement != null) {
-                statement.close();
-            }
-            closeConnection(connection);
+            // Close resources using the closeResources method
+            closeResources(connection, statement1, resultSet1);
+            closeResources(null, statement2, resultSet2); // Pass null for connection as it's already closed
         }
     }
+
+
 
     
     
@@ -399,84 +480,90 @@ public class MyJDBC {
     
     public static List<Patient> searchPatientByFirstName(String firstName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM PATIENTS WHERE FIRST_NAME = ?";
-        List<Patient> patients = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            String sqlQuery = "SELECT * FROM PATIENTS WHERE FIRST_NAME = ?";
+            List<Patient> patients = new ArrayList<>();
+
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, firstName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract patient data from the result set and add to the list
-                    patients.add(extractPatientFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                patients.add(extractPatientFromResultSet(resultSet));
             }
-            // close connection to database
-            closeConnection(connection);
+
             return patients;
         } catch (SQLException e) {
-            // Rethrow the exception to propagate it
-            throw e;
+            throw new SQLException("Error searching for patients by first name: " + firstName, e);
+        } finally {
+            // Close resources using the closeResources method
+            closeResources(connection, statement, resultSet);
         }
     }
+
     
     
     public static List<Patient> searchPatientByLastName(String lastName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM PATIENTS WHERE LAST_NAME = ?";
-        List<Patient> patients = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            String sqlQuery = "SELECT * FROM PATIENTS WHERE LAST_NAME = ?";
+            List<Patient> patients = new ArrayList<>();
+
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, lastName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract patient data from the result set and add to the list
-                    patients.add(extractPatientFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                patients.add(extractPatientFromResultSet(resultSet));
             }
-            // close connection to database
-            closeConnection(connection);
+
             return patients;
         } catch (SQLException e) {
-            // Rethrow the exception to propagate it
-            throw e;
+            throw new SQLException("Error searching for patients by last name: " + lastName, e);
+        } finally {
+            // Close resources using the closeResources method
+            closeResources(connection, statement, resultSet);
         }
     }
+
     
     
     public static List<Patient> searchPatientByFullName(String firstName, String lastName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM PATIENTS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
-        List<Patient> patients = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            String sqlQuery = "SELECT * FROM PATIENTS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
+            List<Patient> patients = new ArrayList<>();
+
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, firstName);
             statement.setString(2, lastName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract patient data from the result set and add to the list
-                    patients.add(extractPatientFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                patients.add(extractPatientFromResultSet(resultSet));
             }
-            // close connection to database
-            closeConnection(connection);
+
             return patients;
         } catch (SQLException e) {
-            // Rethrow the exception to propagate it
-            throw e;
+            throw new SQLException("Error searching for patients by full name: " + firstName + " " + lastName, e);
+        } finally {
+            // Close resources using the closeResources method
+            closeResources(connection, statement, resultSet);
         }
     }
+
     
     private static Patient extractPatientFromResultSet(ResultSet resultSet) throws SQLException {
         Patient patient = new Patient();
@@ -513,39 +600,40 @@ public class MyJDBC {
     
     public static Doctor searchDoctorById(long doctorId) throws SQLException, ClassNotFoundException {
         Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement1 = null;
+        PreparedStatement statement2 = null;
+        ResultSet resultSet1 = null;
+        ResultSet resultSet2 = null;
 
         try {
             connection = connectToDataBase();
+            statement1 = connection.prepareStatement("SELECT * FROM DOCTORS WHERE DOCTOR_ID = ?");
+            statement2 = connection.prepareStatement("SELECT * FROM DOCTORS_DELETED WHERE DOCTOR_ID = ?");
 
-            // First, check if the doctor exists in the doctors table
-            String sqlQuery = "SELECT * FROM DOCTORS WHERE DOCTOR_ID = ?";
-            statement = connection.prepareStatement(sqlQuery);
-            statement.setLong(1, doctorId);
-            resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                // If found in the doctors table, extract doctor data and return
-                Doctor doctor = extractDoctorFromResultSet(resultSet);
-                return doctor;
-            } else {
-                // If not found, return null
-                return null;
+            statement1.setLong(1, doctorId);
+            resultSet1 = statement1.executeQuery();
+            if (resultSet1.next()) {
+                return extractDoctorFromResultSet(resultSet1);
             }
+
+            // If not found in active doctors table, check in deleted doctors table
+            statement2.setLong(1, doctorId);
+            resultSet2 = statement2.executeQuery();
+            if (resultSet2.next()) {
+                return extractDoctorFromResultSet(resultSet2);
+            }
+
+            // If not found in deleted doctors table as well, return null
+            return null;
         } catch (SQLException e) {
-            throw e; // Rethrow the exception
+            throw new SQLException("Error searching for doctor with ID " + doctorId, e);
         } finally {
-            // Close resources in finally block
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (statement != null) {
-                statement.close();
-            }
-            closeConnection(connection);
+            // Close resources using the closeResources method
+            closeResources(connection, statement1, resultSet1);
+            closeResources(null, statement2, resultSet2); // Pass null for connection as it's already closed
         }
     }
+
     
     public static Boolean DoesDoctorExist(long doctorId) throws ClassNotFoundException, SQLException{
     	return (searchDoctorById(doctorId)!=null);
@@ -555,84 +643,93 @@ public class MyJDBC {
     
     public static List<Doctor> searchDoctorByFirstName(String firstName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Doctor> doctors = new ArrayList<>();
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM DOCTORS WHERE FIRST_NAME = ?";
-        List<Doctor> doctors = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            String sqlQuery = "SELECT * FROM DOCTORS WHERE FIRST_NAME = ?";
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, firstName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract doctor data from the result set and add to the list
-                    doctors.add(extractDoctorFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                // Extract doctor data from the result set and add to the list
+                doctors.add(extractDoctorFromResultSet(resultSet));
             }
-            // close connection to database
-            closeConnection(connection);
+
             return doctors;
         } catch (SQLException e) {
             // Rethrow the exception to propagate it
-            throw e;
+            throw new SQLException("Error searching doctors by first name: " + e.getMessage(), e);
+        } finally {
+            // Close resources using the closeResources method
+            closeResources(connection, statement, resultSet);
         }
     }
+
 
     
     public static List<Doctor> searchDoctorByLastName(String lastName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Doctor> doctors = new ArrayList<>();
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM DOCTORS WHERE LAST_NAME = ?";
-        List<Doctor> doctors = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            String sqlQuery = "SELECT * FROM DOCTORS WHERE LAST_NAME = ?";
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, lastName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract doctor data from the result set and add to the list
-                    doctors.add(extractDoctorFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                // Extract doctor data from the result set and add to the list
+                doctors.add(extractDoctorFromResultSet(resultSet));
             }
-            // close connection to database
-            closeConnection(connection);
+
             return doctors;
         } catch (SQLException e) {
             // Rethrow the exception to propagate it
-            throw e;
+            throw new SQLException("Error searching doctors by last name: " + e.getMessage(), e);
+        } finally {
+            // Close resources using the closeResources method
+            closeResources(connection, statement, resultSet);
         }
     }
+
 
     
     public static List<Doctor> searchDoctorByFullName(String firstName, String lastName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Doctor> doctors = new ArrayList<>();
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM DOCTORS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
-        List<Doctor> doctors = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            String sqlQuery = "SELECT * FROM DOCTORS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, firstName);
             statement.setString(2, lastName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract doctor data from the result set and add to the list
-                    doctors.add(extractDoctorFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                // Extract doctor data from the result set and add to the list
+                doctors.add(extractDoctorFromResultSet(resultSet));
             }
-            // close connection to database
-            closeConnection(connection);
+
             return doctors;
         } catch (SQLException e) {
             // Rethrow the exception to propagate it
-            throw e;
+            throw new SQLException("Error searching doctors by full name: " + e.getMessage(), e);
+        } finally {
+            // Close resources using the closeResources method
+            closeResources(connection, statement, resultSet);
         }
     }
+
 
     
     
@@ -660,39 +757,40 @@ public class MyJDBC {
     
     public static Admin searchAdminById(long adminId) throws SQLException, ClassNotFoundException {
         Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement1 = null;
+        PreparedStatement statement2 = null;
+        ResultSet resultSet1 = null;
+        ResultSet resultSet2 = null;
 
         try {
             connection = connectToDataBase();
+            statement1 = connection.prepareStatement("SELECT * FROM ADMINS WHERE ADMIN_ID = ?");
+            statement2 = connection.prepareStatement("SELECT * FROM ADMINS_DELETED WHERE ADMIN_ID = ?");
 
-            // First, check if the admin exists in the admins table
-            String sqlQuery = "SELECT * FROM ADMINS WHERE ADMIN_ID = ?";
-            statement = connection.prepareStatement(sqlQuery);
-            statement.setLong(1, adminId);
-            resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                // If found in the admins table, extract admin data and return
-                Admin admin = extractAdminFromResultSet(resultSet);
-                return admin;
-            } else {
-                // If not found, return null
-                return null;
+            statement1.setLong(1, adminId);
+            resultSet1 = statement1.executeQuery();
+            if (resultSet1.next()) {
+                return extractAdminFromResultSet(resultSet1);
             }
+
+            // If not found in active admins table, check in deleted admins table
+            statement2.setLong(1, adminId);
+            resultSet2 = statement2.executeQuery();
+            if (resultSet2.next()) {
+                return extractAdminFromResultSet(resultSet2);
+            }
+
+            // If not found in deleted admins table as well, return null
+            return null;
         } catch (SQLException e) {
-            throw e; // Rethrow the exception
+            throw new SQLException("Error searching for admin with ID " + adminId, e);
         } finally {
-            // Close resources in finally block
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (statement != null) {
-                statement.close();
-            }
-            closeConnection(connection);
+            // Close resources using the closeResources method
+            closeResources(connection, statement1, resultSet1);
+            closeResources(null, statement2, resultSet2); // Pass null for connection as it's already closed
         }
     }
+
     
     public static Boolean DoesAdminExist(long adminId) throws ClassNotFoundException, SQLException{
     	return (searchAdminById(adminId)!=null);
@@ -703,84 +801,114 @@ public class MyJDBC {
     
     public static List<Admin> searchAdminByFirstName(String firstName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM ADMINS WHERE FIRST_NAME = ?";
-        List<Admin> admins = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            
+            // Create SQL query to search for admins by first name
+            String sqlQuery = "SELECT * FROM ADMINS WHERE FIRST_NAME = ?";
+            List<Admin> admins = new ArrayList<>();
+            
+            // Prepare statement and execute query
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, firstName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract admin data from the result set and add to the list
-                    admins.add(extractAdminFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+            
+            // Iterate over the result set and add admins to the list
+            while (resultSet.next()) {
+                Admin admin = extractAdminFromResultSet(resultSet);
+                admins.add(admin);
             }
-            // close connection to database
+            
+            // Close connection and return the list of admins
             closeConnection(connection);
             return admins;
         } catch (SQLException e) {
-            // Rethrow the exception to propagate it
+            // If a SQL exception occurs during search, throw it
             throw e;
+        } finally {
+            // Close resources in finally block
+            closeResources(connection, statement, resultSet);
         }
     }
+
 
     
     public static List<Admin> searchAdminByLastName(String lastName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM ADMINS WHERE LAST_NAME = ?";
-        List<Admin> admins = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            
+            // Create SQL query to search for admins by last name
+            String sqlQuery = "SELECT * FROM ADMINS WHERE LAST_NAME = ?";
+            List<Admin> admins = new ArrayList<>();
+            
+            // Prepare statement and execute query
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, lastName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract admin data from the result set and add to the list
-                    admins.add(extractAdminFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+            
+            // Iterate over the result set and add admins to the list
+            while (resultSet.next()) {
+                Admin admin = extractAdminFromResultSet(resultSet);
+                admins.add(admin);
             }
-            // close connection to database
+            
+            // Close connection and return the list of admins
             closeConnection(connection);
             return admins;
         } catch (SQLException e) {
-            // Rethrow the exception to propagate it
+            // If a SQL exception occurs during search, throw it
             throw e;
+        } finally {
+            // Close resources in finally block
+            closeResources(connection, statement, resultSet);
         }
     }
+
 
     
     public static List<Admin> searchAdminByFullName(String firstName, String lastName) throws SQLException, ClassNotFoundException {
         Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             connection = connectToDataBase();
-        } catch (ClassNotFoundException e1) {
-            throw e1;
-        }
-        String sqlQuery = "SELECT * FROM ADMINS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
-        List<Admin> admins = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+            
+            // Create SQL query to search for admins by full name
+            String sqlQuery = "SELECT * FROM ADMINS WHERE FIRST_NAME = ? AND LAST_NAME = ?";
+            List<Admin> admins = new ArrayList<>();
+            
+            // Prepare statement and execute query
+            statement = connection.prepareStatement(sqlQuery);
             statement.setString(1, firstName);
             statement.setString(2, lastName);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    // Extract admin data from the result set and add to the list
-                    admins.add(extractAdminFromResultSet(resultSet));
-                }
+            resultSet = statement.executeQuery();
+            
+            // Iterate over the result set and add admins to the list
+            while (resultSet.next()) {
+                Admin admin = extractAdminFromResultSet(resultSet);
+                admins.add(admin);
             }
-            // close connection to database
+            
+            // Close connection and return the list of admins
             closeConnection(connection);
             return admins;
         } catch (SQLException e) {
-            // Rethrow the exception to propagate it
+            // If a SQL exception occurs during search, throw it
             throw e;
+        } finally {
+            // Close resources in finally block
+            closeResources(connection, statement, resultSet);
         }
     }
+
 
     
     private static Admin extractAdminFromResultSet(ResultSet resultSet) throws SQLException {
@@ -801,6 +929,221 @@ public class MyJDBC {
         admin.setUserPublicKey(resultSet.getBytes("USER_PUBLIC_KEY"));
         admin.setServerPrivateKey(resultSet.getBytes("SERVER_PRIVATE_KEY"));
         return admin;
-    }    
+    }
+    
+    
+    public static Patient[] getPatients(int numberUsersPerPage, long pageNumber) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = connectToDataBase();
+
+            // Calculate the offset based on the page number and number of users per page
+            long offset = (pageNumber - 1) * numberUsersPerPage;
+
+            // SQL query to retrieve patients with pagination
+            String sqlQuery = "SELECT * FROM PATIENTS LIMIT ? OFFSET ?";
+            statement = connection.prepareStatement(sqlQuery);
+            statement.setInt(1, numberUsersPerPage);
+            statement.setLong(2, offset);
+            resultSet = statement.executeQuery();
+
+            // Create an array to store patients
+            Patient[] patients = new Patient[numberUsersPerPage];
+
+            // Iterate over the result set and populate the array with patients
+            int index = 0;
+            while (resultSet.next()) {
+                patients[index++] = extractPatientFromResultSet(resultSet);
+            }
+
+            return patients;
+        } catch (SQLException | ClassNotFoundException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        } finally {
+            // Close resources in finally block
+            closeResources(connection, statement, resultSet);
+        }
+    }
+    
+    
+    public static Doctor[] getDoctors(int numberUsersPerPage, long pageNumber) throws SQLException, ClassNotFoundException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = connectToDataBase();
+
+            // Calculate the offset based on the page number and number of users per page
+            long offset = (pageNumber - 1) * numberUsersPerPage;
+
+            // SQL query to retrieve doctors with pagination
+            String sqlQuery = "SELECT * FROM DOCTORS LIMIT ? OFFSET ?";
+            statement = connection.prepareStatement(sqlQuery);
+            statement.setInt(1, numberUsersPerPage);
+            statement.setLong(2, offset);
+            resultSet = statement.executeQuery();
+
+            // Create an array to store doctors
+            Doctor[] doctors = new Doctor[numberUsersPerPage];
+
+            // Iterate over the result set and populate the array with doctors
+            int index = 0;
+            while (resultSet.next()) {
+                doctors[index++] = extractDoctorFromResultSet(resultSet);
+            }
+
+            return doctors;
+        } catch (SQLException | ClassNotFoundException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        } finally {
+            // Close resources in finally block
+            closeResources(connection, statement, resultSet);
+        }
+    }
+
+    
+    public static Admin[] getAdmins(int numberUsersPerPage, long pageNumber) throws SQLException, ClassNotFoundException {
+        
+    	Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = connectToDataBase();
+
+            // Calculate the offset based on the page number and number of users per page
+            long offset = (pageNumber - 1) * numberUsersPerPage;
+
+            // SQL query to retrieve admins with pagination
+            String sqlQuery = "SELECT * FROM ADMINS LIMIT ? OFFSET ?";
+            statement = connection.prepareStatement(sqlQuery);
+            statement.setInt(1, numberUsersPerPage);
+            statement.setLong(2, offset);
+            resultSet = statement.executeQuery();
+
+            // Create an array to store admins
+            Admin[] admins = new Admin[numberUsersPerPage];
+
+            // Iterate over the result set and populate the array with admins
+            int index = 0;
+            while (resultSet.next()) {
+                admins[index++] = extractAdminFromResultSet(resultSet);
+            }
+
+            return admins;
+        } catch (SQLException | ClassNotFoundException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        } finally {
+            // Close resources in finally block
+            closeResources(connection, statement, resultSet);
+        }
+    }
+
+    
+ // Helper method to get the total count of patients
+ 
+	private static int getTotalPatientsCount(Connection connection) throws SQLException {
+        PreparedStatement countStatement = null;
+        ResultSet countResultSet = null;
+        try {
+            String countQuery = "SELECT COUNT(*) AS total FROM PATIENTS";
+            countStatement = connection.prepareStatement(countQuery);
+            countResultSet = countStatement.executeQuery();
+            if (countResultSet.next()) {
+                return countResultSet.getInt("total");
+            }
+            return 0;
+        } finally {
+            closeResources(null, countStatement, countResultSet); // Connection is already closed
+        }
+    }
+    
+    public static int getNumberOfPatients() throws SQLException, ClassNotFoundException {
+    	Connection connection = null ;
+    	try {
+    		connection = connectToDataBase();
+    		return getTotalPatientsCount(connection);
+    	} catch (SQLException | ClassNotFoundException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        } finally {
+            // Close resources in finally block
+            closeConnection(connection);
+        }
+    }
+    
+    
+	private static int getTotalDoctorsCount(Connection connection) throws SQLException {
+        PreparedStatement countStatement = null;
+        ResultSet countResultSet = null;
+        try {
+            String countQuery = "SELECT COUNT(*) AS total FROM DOCTORS";
+            countStatement = connection.prepareStatement(countQuery);
+            countResultSet = countStatement.executeQuery();
+            if (countResultSet.next()) {
+                return countResultSet.getInt("total");
+            }
+            return 0;
+        } finally {
+            closeResources(null, countStatement, countResultSet); // Connection is already closed
+        }
+    }
+	
+	
+	public static int getNumberOfDoctors() throws SQLException, ClassNotFoundException {
+    	Connection connection = null ;
+    	try {
+    		connection = connectToDataBase();
+    		return getTotalDoctorsCount(connection);
+    	} catch (SQLException | ClassNotFoundException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        } finally {
+            // Close resources in finally block
+            closeConnection(connection);
+        }
+    }
+
+    
+	private static int getTotalAdminsCount(Connection connection) throws SQLException {
+        PreparedStatement countStatement = null;
+        ResultSet countResultSet = null;
+        try {
+            String countQuery = "SELECT COUNT(*) AS total FROM ADMINS";
+            countStatement = connection.prepareStatement(countQuery);
+            countResultSet = countStatement.executeQuery();
+            if (countResultSet.next()) {
+                return countResultSet.getInt("total");
+            }
+            return 0;
+        } finally {
+            closeResources(null, countStatement, countResultSet); // Connection is already closed
+        }
+    }
+	
+	
+	public static int getNumberOfAdmins() throws SQLException, ClassNotFoundException {
+    	Connection connection = null ;
+    	try {
+    		connection = connectToDataBase();
+    		return getTotalAdminsCount(connection);
+    	} catch (SQLException | ClassNotFoundException e) {
+            // Rethrow the exception to propagate it
+            throw e;
+        } finally {
+            // Close resources in finally block
+            closeConnection(connection);
+        }
+    }
+    
+    
+   
 }
 
