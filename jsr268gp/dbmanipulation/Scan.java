@@ -1,22 +1,20 @@
 package jsr268gp.dbmanipulation;
 
-import java.sql.Date;
-
 public class Scan {
     private long scanId;
     private long patientId;
     private long sessionId;
-    private String scanDescription;
-    private Date dateOfScan;
-    private String scanResults;
-    private String doctorsComments;
-    private String radiologistName;
-    private String radiologistContactInfo;
+    private byte[] scanDescription;
+    private byte[] dateOfScan;
+    private byte[] scanResults;
+    private byte[] doctorsComments;
+    private byte[] radiologistName;
+    private byte[] radiologistContactInfo;
 
     // Constructor
-    public Scan(long patientId, long sessionId, String scanDescription, Date dateOfScan,
-                String scanResults, String doctorsComments, String radiologistName,
-                String radiologistContactInfo) {
+    public Scan(long scanId, long patientId, long sessionId, byte[] scanDescription, byte[] dateOfScan,
+                byte[] scanResults, byte[] doctorsComments, byte[] radiologistName, byte[] radiologistContactInfo) {
+        this.scanId = scanId;
         this.patientId = patientId;
         this.sessionId = sessionId;
         this.scanDescription = scanDescription;
@@ -27,7 +25,7 @@ public class Scan {
         this.radiologistContactInfo = radiologistContactInfo;
     }
 
-    // Getters and Setters
+    // Getters and setters
     public long getScanId() {
         return scanId;
     }
@@ -52,54 +50,53 @@ public class Scan {
         this.sessionId = sessionId;
     }
 
-    public String getScanDescription() {
+    public byte[] getScanDescription() {
         return scanDescription;
     }
 
-    public void setScanDescription(String scanDescription) {
+    public void setScanDescription(byte[] scanDescription) {
         this.scanDescription = scanDescription;
     }
 
-    public Date getDateOfScan() {
+    public byte[] getDateOfScan() {
         return dateOfScan;
     }
 
-    public void setDateOfScan(Date dateOfScan) {
+    public void setDateOfScan(byte[] dateOfScan) {
         this.dateOfScan = dateOfScan;
     }
 
-    public String getScanResults() {
+    public byte[] getScanResults() {
         return scanResults;
     }
 
-    public void setScanResults(String scanResults) {
+    public void setScanResults(byte[] scanResults) {
         this.scanResults = scanResults;
     }
 
-    public String getDoctorsComments() {
+    public byte[] getDoctorsComments() {
         return doctorsComments;
     }
 
-    public void setDoctorsComments(String doctorsComments) {
+    public void setDoctorsComments(byte[] doctorsComments) {
         this.doctorsComments = doctorsComments;
     }
 
-    public String getRadiologistName() {
+    public byte[] getRadiologistName() {
         return radiologistName;
     }
 
-    public void setRadiologistName(String radiologistName) {
+    public void setRadiologistName(byte[] radiologistName) {
         this.radiologistName = radiologistName;
     }
 
-    public String getRadiologistContactInfo() {
+    public byte[] getRadiologistContactInfo() {
         return radiologistContactInfo;
     }
 
-    public void setRadiologistContactInfo(String radiologistContactInfo) {
+    public void setRadiologistContactInfo(byte[] radiologistContactInfo) {
         this.radiologistContactInfo = radiologistContactInfo;
     }
-
-    
 }
+
 

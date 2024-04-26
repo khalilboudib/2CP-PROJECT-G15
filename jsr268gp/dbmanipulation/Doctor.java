@@ -1,37 +1,30 @@
 package jsr268gp.dbmanipulation;
 
-import java.sql.Date;
-import java.time.LocalDate;
-
 public class Doctor {
-    private long doctorId;
-    private String firstName;
-    private String lastName;
-    private Boolean gender;
-    private String picture;
-    private Date dateOfBirth;
-    private String nationalId;
-    private String about;
-    private String email;
-    private String address;
-    private String phoneNumber;
-    private String hashedPassword;
+	
+	
+	private long doctorId;
+    private byte[] firstName;
+    private byte[] lastName;
+    private byte gender;
+    private byte[] picture;
+    private byte[] dateOfBirth;
+    private long nationalId;
+    private byte[] about;
+    private byte[] email;
+    private byte[] address;
+    private byte[] phoneNumber;
+    private String hashedCodePin;
     private int cliniqueId;
-    private Date cardExpiringDate;
+    private byte[] cardExpiringDate;
     private byte[] userPublicKey;
-    private byte[] serverPrivateKey;
-    
-    
-    
-    public Doctor () {
-    	return;
-    }
+    private byte[] doctorStatus;
+    private byte[] sessionKey;
 
     // Constructor
-    public Doctor(long doctorId, String firstName, String lastName, Boolean gender, String picture,
-                  Date dateOfBirth, String nationalId, String about, String email, String address,
-                  String phoneNumber, String hashedPassword, int cliniqueId, Date cardExpiringDate,
-                  byte[] userPublicKey, byte[] serverPrivateKey) {
+    public Doctor(long doctorId, byte[] firstName, byte[] lastName, byte gender, byte[] picture, byte[] dateOfBirth,
+                  long nationalId, byte[] about, byte[] email, byte[] address, byte[] phoneNumber, String hashedCodePin,
+                  int cliniqueId, byte[] cardExpiringDate, byte[] userPublicKey, byte[] doctorStatus, byte[] sessionKey) {
         this.doctorId = doctorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -43,16 +36,19 @@ public class Doctor {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.hashedPassword = hashedPassword;
+        this.hashedCodePin = hashedCodePin;
         this.cliniqueId = cliniqueId;
-        LocalDate today = LocalDate.now();
-        LocalDate twoYearsLater = today.plusYears(2);
-        this.cardExpiringDate = Date.valueOf(twoYearsLater);
+        this.cardExpiringDate = cardExpiringDate;
         this.userPublicKey = userPublicKey;
-        this.serverPrivateKey = serverPrivateKey;
+        this.doctorStatus = doctorStatus;
+        this.sessionKey = sessionKey;
     }
 
-    // Getters and Setters
+    public Doctor() {
+		return ;
+	}
+
+	// Getters and setters
     public long getDoctorId() {
         return doctorId;
     }
@@ -61,92 +57,92 @@ public class Doctor {
         this.doctorId = doctorId;
     }
 
-    public String getFirstName() {
+    public byte[] getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(byte[] firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
+    public byte[] getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(byte[] lastName) {
         this.lastName = lastName;
     }
 
-    public Boolean getGender() {
+    public byte getGender() {
         return gender;
     }
 
-    public void setGender(Boolean gender) {
+    public void setGender(byte gender) {
         this.gender = gender;
     }
 
-    public String getPicture() {
+    public byte[] getPicture() {
         return picture;
     }
 
-    public void setPicture(String picture) {
+    public void setPicture(byte[] picture) {
         this.picture = picture;
     }
 
-    public Date getDateOfBirth() {
+    public byte[] getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(byte[] dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getNationalId() {
+    public long getNationalId() {
         return nationalId;
     }
 
-    public void setNationalId(String nationalId) {
+    public void setNationalId(long nationalId) {
         this.nationalId = nationalId;
     }
 
-    public String getAbout() {
+    public byte[] getAbout() {
         return about;
     }
 
-    public void setAbout(String about) {
+    public void setAbout(byte[] about) {
         this.about = about;
     }
 
-    public String getEmail() {
+    public byte[] getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(byte[] email) {
         this.email = email;
     }
 
-    public String getAddress() {
+    public byte[] getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(byte[] address) {
         this.address = address;
     }
 
-    public String getPhoneNumber() {
+    public byte[] getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(byte[] phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
+    public String getHashedCodePin() {
+        return hashedCodePin;
     }
 
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+    public void setHashedCodePin(String hashedCodePin) {
+        this.hashedCodePin = hashedCodePin;
     }
 
     public int getCliniqueId() {
@@ -157,11 +153,11 @@ public class Doctor {
         this.cliniqueId = cliniqueId;
     }
 
-    public Date getCardExpiringDate() {
+    public byte[] getCardExpiringDate() {
         return cardExpiringDate;
     }
 
-    public void setCardExpiringDate(Date cardExpiringDate) {
+    public void setCardExpiringDate(byte[] cardExpiringDate) {
         this.cardExpiringDate = cardExpiringDate;
     }
 
@@ -173,12 +169,20 @@ public class Doctor {
         this.userPublicKey = userPublicKey;
     }
 
-    public byte[] getServerPrivateKey() {
-        return serverPrivateKey;
+    public byte[] getDoctorStatus() {
+        return doctorStatus;
     }
 
-    public void setServerPrivateKey(byte[] serverPrivateKey) {
-        this.serverPrivateKey = serverPrivateKey;
+    public void setDoctorStatus(byte[] doctorStatus) {
+        this.doctorStatus = doctorStatus;
+    }
+
+    public byte[] getSessionKey() {
+        return sessionKey;
+    }
+
+    public void setSessionKey(byte[] sessionKey) {
+        this.sessionKey = sessionKey;
     }
     
 }

@@ -3,15 +3,18 @@ package jsr268gp.dbmanipulation;
 public class Clinique {
     private int cliniqueId;
     private String cliniqueName;
+    private int wilaya;
     private String location;
     private String contactPerson;
     private String contactPersonEmail;
     private String contactPersonPhone;
 
     // Constructor
-    public Clinique(String cliniqueName, String location, String contactPerson,
+    public Clinique(int cliniqueId, String cliniqueName, int wilaya, String location, String contactPerson,
                     String contactPersonEmail, String contactPersonPhone) {
+        this.cliniqueId = cliniqueId;
         this.cliniqueName = cliniqueName;
+        this.wilaya = wilaya;
         this.location = location;
         this.contactPerson = contactPerson;
         this.contactPersonEmail = contactPersonEmail;
@@ -25,6 +28,10 @@ public class Clinique {
 
     public String getCliniqueName() {
         return cliniqueName;
+    }
+
+    public int getWilaya() {
+        return wilaya;
     }
 
     public String getLocation() {
@@ -50,6 +57,10 @@ public class Clinique {
 
     public void setCliniqueName(String cliniqueName) {
         this.cliniqueName = cliniqueName;
+    }
+
+    public void setWilaya(int wilaya) {
+        this.wilaya = wilaya;
     }
 
     public void setLocation(String location) {

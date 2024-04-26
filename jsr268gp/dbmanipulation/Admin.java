@@ -1,196 +1,197 @@
 package jsr268gp.dbmanipulation;
 
-import java.sql.Date;
-import java.time.LocalDate;
-
 public class Admin {
     private long adminId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phoneNumber;
-    private String address;
-    private String hashedPassword;
-    private Date dateOfBirth;
-    private String nationalId;
-    private Boolean gender;
-    private String emergencyContactName;
-    private String emergencyContactPhone;
-    private Date cardExpiringDate;
+    private byte[] firstName;
+    private byte[] lastName;
+    private byte[] email;
+    private byte[] phoneNumber;
+    private byte[] address;
+    private byte[] hashedCodePin;
+    private byte[] dateOfBirth;
+    private long nationalId;
+    private byte gender;
+    private byte[] emergencyContactName;
+    private byte[] emergencyContactPhone;
+    private byte[] cardExpiringDate;
     private byte[] userPublicKey;
-    private byte[] serverPrivateKey;
+    private byte[] adminStatus;
+    private byte[] sessionKey;
 
-    
-    public Admin() {
-    	return;
-    }
-    
     
     // Constructor
-    public Admin(long adminId, String firstName, String lastName, String email, String phoneNumber,
-                 String address, String hashedPassword, Date dateOfBirth, String nationalId, Boolean gender,
-                 String emergencyContactName, String emergencyContactPhone,
-                 byte[] userPublicKey, byte[] serverPrivateKey) {
+    public Admin(long adminId, byte[] firstName, byte[] lastName, byte[] email, byte[] phoneNumber, byte[] address,
+                 byte[] hashedCodePin, byte[] dateOfBirth, long nationalId, byte gender, byte[] emergencyContactName,
+                 byte[] emergencyContactPhone, byte[] cardExpiringDate, byte[] userPublicKey, byte[] adminStatus,
+                 byte[] sessionKey) {
         this.adminId = adminId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.hashedPassword = hashedPassword;
-        this.dateOfBirth = dateOfBirth;
-        this.nationalId = nationalId;
-        this.gender = gender;
-        this.emergencyContactName = emergencyContactName;
-        this.emergencyContactPhone = emergencyContactPhone;
-        LocalDate today = LocalDate.now();
-        LocalDate twoYearsLater = today.plusYears(2);
-        this.cardExpiringDate = Date.valueOf(twoYearsLater);
-        this.userPublicKey = userPublicKey;
-        this.serverPrivateKey = serverPrivateKey;
-        }
-    
-    
-    public Admin(long adminId, String firstName, String lastName, String email, String phoneNumber,
-            String address, String hashedPassword, Date dateOfBirth, String nationalId, Boolean gender,
-            byte[] userPublicKey, byte[] serverPrivateKey) {
-    	this.adminId = adminId;
-    	this.firstName = firstName;
-    	this.lastName = lastName;
-    	this.email = email;
-    	this.phoneNumber = phoneNumber;
-    	this.address = address;
-    	this.hashedPassword = hashedPassword;
-    	this.dateOfBirth = dateOfBirth;
-    	this.nationalId = nationalId;
-    	this.gender = gender;
-    	LocalDate today = LocalDate.now();
-    	LocalDate twoYearsLater = today.plusYears(2);
-    	this.cardExpiringDate = Date.valueOf(twoYearsLater);
-    	this.userPublicKey = userPublicKey;
-    	this.serverPrivateKey = serverPrivateKey;
-    	}
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
+        this.setEmail(email);
+        this.setPhoneNumber(phoneNumber);
+        this.setAddress(address);
+        this.setHashedCodePin(hashedCodePin);
+        this.setDateOfBirth(dateOfBirth);
+        this.setNationalId(nationalId);
+        this.setGender(gender);
+        this.setEmergencyContactName(emergencyContactName);
+        this.setEmergencyContactPhone(emergencyContactPhone);
+        this.setCardExpiringDate(cardExpiringDate);
+        this.setUserPublicKey(userPublicKey);
+        this.setAdminStatus(adminStatus);
+        this.setSessionKey(sessionKey);
+    }
 
-    // Getters
+	// Getters and setters
+    
     public long getAdminId() {
         return adminId;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public String getNationalId() {
-        return nationalId;
-    }
-
-    public Boolean getGender() {
-        return gender;
-    }
-
-    public String getEmergencyContactName() {
-        return emergencyContactName;
-    }
-
-    public String getEmergencyContactPhone() {
-        return emergencyContactPhone;
-    }
-
-    public Date getCardExpiringDate() {
-        return cardExpiringDate;
-    }
-
-    public byte[] getUserPublicKey() {
-        return userPublicKey;
-    }
-
-    public byte[] getServerPrivateKey() {
-        return serverPrivateKey;
-    }
-
-    // Setters
     public void setAdminId(long adminId) {
         this.adminId = adminId;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public byte[] getFirstName() {
+		return firstName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public void setFirstName(byte[] firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public byte[] getLastName() {
+		return lastName;
+	}
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+	public void setLastName(byte[] lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public byte[] getEmail() {
+		return email;
+	}
 
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
+	public void setEmail(byte[] email) {
+		this.email = email;
+	}
 
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
+	public byte[] getHashedCodePin() {
+		return hashedCodePin;
+	}
 
-    public void setNationalId(String nationalId) {
-        this.nationalId = nationalId;
-    }
+	public void setHashedCodePin(byte[] hashedCodePin) {
+		this.hashedCodePin = hashedCodePin;
+	}
 
-    public void setGender(Boolean gender) {
-        this.gender = gender;
-    }
+	public byte[] getDateOfBirth() {
+		return dateOfBirth;
+	}
 
-    public void setEmergencyContactName(String emergencyContactName) {
-        this.emergencyContactName = emergencyContactName;
-    }
+	public void setDateOfBirth(byte[] dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 
-    public void setEmergencyContactPhone(String emergencyContactPhone) {
-        this.emergencyContactPhone = emergencyContactPhone;
-    }
+	public byte[] getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public void setCardExpiringDate(Date cardExpiringDate) {
-        this.cardExpiringDate = cardExpiringDate;
-    }
+	public void setPhoneNumber(byte[] phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
-    public void setUserPublicKey(byte[] userPublicKey) {
-        this.userPublicKey = userPublicKey;
-    }
+	public byte[] getAddress() {
+		return address;
+	}
 
-    public void setServerPrivateKey(byte[] serverPrivateKey) {
-        this.serverPrivateKey = serverPrivateKey;
+	public void setAddress(byte[] address) {
+		this.address = address;
+	}
+
+	public long getNationalId() {
+		return nationalId;
+	}
+
+	public void setNationalId(long nationalId) {
+		this.nationalId = nationalId;
+	}
+
+	public byte getGender() {
+		return gender;
+	}
+
+	public void setGender(byte gender) {
+		this.gender = gender;
+	}
+
+	public byte[] getEmergencyContactPhone() {
+		return emergencyContactPhone;
+	}
+
+	public void setEmergencyContactPhone(byte[] emergencyContactPhone) {
+		this.emergencyContactPhone = emergencyContactPhone;
+	}
+
+	public byte[] getEmergencyContactName() {
+		return emergencyContactName;
+	}
+
+	public void setEmergencyContactName(byte[] emergencyContactName) {
+		this.emergencyContactName = emergencyContactName;
+	}
+
+	public byte[] getCardExpiringDate() {
+		return cardExpiringDate;
+	}
+
+	public void setCardExpiringDate(byte[] cardExpiringDate) {
+		this.cardExpiringDate = cardExpiringDate;
+	}
+
+	public byte[] getUserPublicKey() {
+		return userPublicKey;
+	}
+
+	public void setUserPublicKey(byte[] userPublicKey) {
+		this.userPublicKey = userPublicKey;
+	}
+
+	public byte[] getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(byte[] sessionKey) {
+		this.sessionKey = sessionKey;
+	}
+
+	public byte[] getAdminStatus() {
+		return adminStatus;
+	}
+
+	public void setAdminStatus(byte[] adminStatus) {
+		this.adminStatus = adminStatus;
+	}
+	
+	@Override
+    public String toString() {
+        return "Admin{" +
+                "adminId=" + adminId +
+                ", firstName=" + new String(firstName) +
+                ", lastName=" + new String(lastName) +
+                ", email=" + new String(email) +
+                ", phoneNumber=" + new String(phoneNumber) +
+                ", address=" + new String(address) +
+                ", hashedCodePin=" + new String(hashedCodePin) +
+                ", dateOfBirth=" + new String(dateOfBirth) +
+                ", nationalId=" + nationalId +
+                ", gender=" + gender +
+                ", emergencyContactName=" + new String(emergencyContactName) +
+                ", emergencyContactPhone=" + new String(emergencyContactPhone) +
+                ", cardExpiringDate=" + new String(cardExpiringDate) +
+                ", userPublicKey=" + new String(userPublicKey) +
+                ", adminStatus=" + new String(adminStatus) +
+                ", sessionKey=" + new String(sessionKey) +
+                '}';
     }
+	
 }
-

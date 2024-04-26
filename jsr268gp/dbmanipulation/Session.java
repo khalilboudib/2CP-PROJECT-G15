@@ -1,24 +1,20 @@
 package jsr268gp.dbmanipulation;
-
-import java.math.BigDecimal;
-import java.sql.Date;
-
 public class Session {
     private long sessionId;
     private long patientId;
     private long doctorId;
-    private Date sessionDate;
-    private int sessionDuration;
-    private String sessionNotes;
-    private String diagnosis;
-    private String treatmentPlan;
-    private Boolean isThereScans;
-    private BigDecimal sessionFee;
+    private byte[] sessionDate;
+    private byte[] sessionDuration;
+    private byte[] sessionNotes;
+    private byte[] diagnosis;
+    private byte[] treatmentPlan;
+    private byte isThereScans;
+    private byte[] sessionFee;
 
     // Constructor
-    public Session(long patientId, long doctorId, Date sessionDate, int sessionDuration,
-                   String sessionNotes, String diagnosis, String treatmentPlan,
-                   Boolean isThereScans, BigDecimal sessionFee) {
+    public Session(long sessionId, long patientId, long doctorId, byte[] sessionDate, byte[] sessionDuration,
+                   byte[] sessionNotes, byte[] diagnosis, byte[] treatmentPlan, byte isThereScans, byte[] sessionFee) {
+        this.sessionId = sessionId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.sessionDate = sessionDate;
@@ -30,7 +26,7 @@ public class Session {
         this.sessionFee = sessionFee;
     }
 
-    // Getters and Setters
+    // Getters and setters
     public long getSessionId() {
         return sessionId;
     }
@@ -55,59 +51,59 @@ public class Session {
         this.doctorId = doctorId;
     }
 
-    public Date getSessionDate() {
+    public byte[] getSessionDate() {
         return sessionDate;
     }
 
-    public void setSessionDate(Date sessionDate) {
+    public void setSessionDate(byte[] sessionDate) {
         this.sessionDate = sessionDate;
     }
 
-    public int getSessionDuration() {
+    public byte[] getSessionDuration() {
         return sessionDuration;
     }
 
-    public void setSessionDuration(int sessionDuration) {
+    public void setSessionDuration(byte[] sessionDuration) {
         this.sessionDuration = sessionDuration;
     }
 
-    public String getSessionNotes() {
+    public byte[] getSessionNotes() {
         return sessionNotes;
     }
 
-    public void setSessionNotes(String sessionNotes) {
+    public void setSessionNotes(byte[] sessionNotes) {
         this.sessionNotes = sessionNotes;
     }
 
-    public String getDiagnosis() {
+    public byte[] getDiagnosis() {
         return diagnosis;
     }
 
-    public void setDiagnosis(String diagnosis) {
+    public void setDiagnosis(byte[] diagnosis) {
         this.diagnosis = diagnosis;
     }
 
-    public String getTreatmentPlan() {
+    public byte[] getTreatmentPlan() {
         return treatmentPlan;
     }
 
-    public void setTreatmentPlan(String treatmentPlan) {
+    public void setTreatmentPlan(byte[] treatmentPlan) {
         this.treatmentPlan = treatmentPlan;
     }
 
-    public Boolean getIsThereScans() {
+    public byte getIsThereScans() {
         return isThereScans;
     }
 
-    public void setIsThereScans(Boolean isThereScans) {
+    public void setIsThereScans(byte isThereScans) {
         this.isThereScans = isThereScans;
     }
 
-    public BigDecimal getSessionFee() {
+    public byte[] getSessionFee() {
         return sessionFee;
     }
 
-    public void setSessionFee(BigDecimal sessionFee) {
+    public void setSessionFee(byte[] sessionFee) {
         this.sessionFee = sessionFee;
     }
 }
