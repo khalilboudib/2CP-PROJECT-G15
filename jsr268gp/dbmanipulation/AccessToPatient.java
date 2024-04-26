@@ -1,18 +1,19 @@
 package jsr268gp.dbmanipulation;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-public class Access {
+public class AccessToPatient {
     private long accessId;
     private long patientId;
     private long doctorId;
-    private Timestamp accessDate;
+    private LocalDateTime accessDate;
     private AccessType accessType;
     private int accessDuration;
 
     // Constructor
-    public Access(long patientId, long doctorId, Timestamp accessDate,
-                  AccessType accessType, int accessDuration) {
+    public AccessToPatient(long accessId, long patientId, long doctorId, LocalDateTime accessDate,
+                           AccessType accessType, int accessDuration) {
+        this.accessId = accessId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.accessDate = accessDate;
@@ -20,7 +21,7 @@ public class Access {
         this.accessDuration = accessDuration;
     }
 
-    // Getters and Setters
+    // Getters and setters
     public long getAccessId() {
         return accessId;
     }
@@ -45,11 +46,11 @@ public class Access {
         this.doctorId = doctorId;
     }
 
-    public Timestamp getAccessDate() {
+    public LocalDateTime getAccessDate() {
         return accessDate;
     }
 
-    public void setAccessDate(Timestamp accessDate) {
+    public void setAccessDate(LocalDateTime accessDate) {
         this.accessDate = accessDate;
     }
 
@@ -69,4 +70,3 @@ public class Access {
         this.accessDuration = accessDuration;
     }
 }
-
