@@ -1,6 +1,6 @@
-package application.net;
 
 import java.io.BufferedReader;
+import java.lang.reflect.Type;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -102,6 +102,12 @@ public class UtilRequest {
         // Convert map to JSON string
         Gson gson = new Gson();
         return gson.toJson(map);
+    }
+    public static <K, V> Map<K, V> jsonStringToMap(String jsonString) {
+        // Convert JSON string to map
+        Gson gson = new Gson();
+        Type type = new com.google.gson.reflect.TypeToken<Map<K, V>>(){}.getType();
+        return gson.fromJson(jsonString, type);
     }
     
 }
