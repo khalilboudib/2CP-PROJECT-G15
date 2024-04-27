@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: FDFDFD;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="85.0" layoutY="67.0" prefHeight="93.0" prefWidth="452.0" style="-fx-background-color: pink; -fx-background-radius: 40;" text="Your request is under procecessing" textFill="#fdfdfd">
+         <font>
+            <Font name="System Bold Italic" size="24.0" />
+         </font>
+         <padding>
+            <Insets left="30.0" />
+         </padding>
+      </Label>
+      <ProgressBar layoutX="119.0" layoutY="212.0" prefHeight="20.0" prefWidth="384.0" progress="0.0" />
+      <ImageView fitHeight="113.0" fitWidth="109.0" layoutX="259.0" layoutY="255.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/LaodArrow.jpg" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

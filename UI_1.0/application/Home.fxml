@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.WelcomeController">
+   <top>
+        <AnchorPane prefHeight="400.0" prefWidth="647.0" style="-fx-background-color: #fbfaf8;" BorderPane.alignment="CENTER">
+            <children>
+                <Line endX="459.0" layoutX="153.0" layoutY="339.0" startX="-118.0" stroke="PINK" />
+            <Text fill="LIGHTGRAY" layoutX="27.0" layoutY="370.0" strokeType="OUTSIDE" strokeWidth="0.0" text="© 2024 Suka, Inc." textAlignment="CENTER" wrappingWidth="122.2978515625">
+               <font>
+                  <Font name="System Bold" size="10.0" />
+               </font>
+            </Text>
+            <Button layoutX="255.0" layoutY="355.0" mnemonicParsing="false" onAction="#doctor_btn" prefHeight="21.0" prefWidth="90.0" style="-fx-background-color: #fbfaf8;" text="contact us" textFill="#b2aaaa">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
+            <Button layoutX="160.0" layoutY="355.0" mnemonicParsing="false" onAction="#doctor_btn" prefHeight="21.0" prefWidth="102.0" style="-fx-background-color: #fbfaf8;" text="About us" textFill="#b2aaaa">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
+            <ImageView fitHeight="279.0" fitWidth="361.0" layoutX="280.0" layoutY="82.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/doctorHelpingPatient.png" />
+               </image>
+            </ImageView>
+            <Button layoutX="472.0" layoutY="27.0" mnemonicParsing="false" onAction="#doctor_btn" prefHeight="45.0" prefWidth="131.0" style="-fx-background-color: pink; -fx-background-radius: 12;" text="Get started" textAlignment="CENTER" textFill="#fdfdfd">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Button>
+            <ImageView fitHeight="30.0" fitWidth="46.0" layoutX="492.0" layoutY="351.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/unnamed.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="30.0" fitWidth="31.0" layoutX="533.0" layoutY="351.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/unnamed%20(1).png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="28.0" fitWidth="37.0" layoutX="575.0" layoutY="352.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/unnamed%20(2).png" />
+               </image>
+            </ImageView>
+            <TextFlow layoutX="27.0" layoutY="27.0" prefHeight="172.0" prefWidth="279.0">
+               <children>
+                  <Label prefHeight="147.0" prefWidth="278.0" text="Your trusted companion in safeguarding sensitive medical information." textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="System Bold Italic" size="24.0" />
+                     </font>
+                  </Label>
+                  <Label prefHeight="157.0" prefWidth="278.0" text="Because every byte matters when lives are at stake! " textAlignment="CENTER" textFill="#ffc2cd" wrapText="true">
+                     <font>
+                        <Font name="System Bold Italic" size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </TextFlow>
+            </children>
+        </AnchorPane>
+   </top>
+</BorderPane>

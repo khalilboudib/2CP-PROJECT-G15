@@ -1,0 +1,11 @@
+.button {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.75) , 4,0,0,1 );
+}
+
+.button:hover {
+    -fx-background-color:lightblue ;
+    -fx-border-color:lightblue;
+}
+.table-row-cell:even {
+	-fx-background-color:pink ;
+}
