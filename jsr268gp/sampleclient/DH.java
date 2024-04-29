@@ -89,16 +89,16 @@ public class DH {
 		byte[] digitalSignature = null;
 		
 		try{
-		// CrÃ©ation d'un objet Signature avec l'algorithme SHA256withRSA
+		// Création d'un objet Signature avec l'algorithme SHA256withRSA
 	    Signature signatureIns = Signature.getInstance("SHA1withRSA");
 	    
-	    // Initialisation de l'objet Signature avec la clÃ© privÃ©e
+	    // Initialisation de l'objet Signature avec la clé privée
 	    signatureIns.initSign(privateKey);
 	    
-	    // Ajout des donnÃ©es Ã  signer
+	    // Ajout des données à signer
 	    signatureIns.update(data);
 	    
-	    // Signature des donnÃ©es
+	    // Signature des données
 	     digitalSignature = signatureIns.sign();
 	    
 		}catch(Exception e){
@@ -151,16 +151,16 @@ public class DH {
 	public static boolean verifySignature(byte[] data, byte[] signature,PublicKey publicKey) {
 		boolean isVerified = false;
 		try{
-		// CrÃ©ation d'un objet Signature avec l'algorithme SHA256withRSA
+		// Création d'un objet Signature avec l'algorithme SHA256withRSA
 	    Signature signatureIns = Signature.getInstance("SHA1withRSA");
 	    
-	    // Initialisation de l'objet Signature avec la clÃ© privÃ©e
+	    // Initialisation de l'objet Signature avec la clé privée
 	    signatureIns.initVerify(publicKey);
 	    
-	    // Ajout des donnÃ©es Ã  signer
+	    // Ajout des données à signer
 	    signatureIns.update(data);
 	    
-	    // Signature des donnÃ©es
+	    // Signature des données
 	    isVerified = signatureIns.verify(signature);
 	    
 		}catch(Exception e){
@@ -172,19 +172,21 @@ public class DH {
 	// masque function
 	public static byte[] masqueFunction(byte[] secret){
 		// using md5
-		return hash(secret);
+		byte[] out = new byte[16];
+		System.arraycopy(hash(secret), 0, out, 0, out.length);
+		return out;
 	}
 	
 	public static byte[] hash(byte[] secret){
 		try {
 	        // Use SHA-256 as the hash function
-	        MessageDigest sha256 = MessageDigest.getInstance("MD5");
+	        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
 
 	        // Compute the SHA-256 hash of the shared secret
 	        byte[] sha256Hash = sha256.digest(secret);
 
 	        // Truncate the hash to 128 bits (16 bytes)
-	        byte[] aesKeyBytes = new byte[16];
+	        byte[] aesKeyBytes = new byte[32];
 	        System.arraycopy(sha256Hash, 0, aesKeyBytes, 0, aesKeyBytes.length);
 	        return aesKeyBytes;
 

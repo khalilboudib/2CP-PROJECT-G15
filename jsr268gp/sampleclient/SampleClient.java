@@ -37,6 +37,9 @@ public class SampleClient {
 	/**
 	 * @param args
 	 */
+	public static final int MODULUS_SIZE = 128;
+	public static final int HASH_SIZE = 32;
+	public static final int AES_KEY_SIZE = 16;
 	public static final byte CLA_APPLET = (byte)0x80;
 	public static final byte INS_CS_RSA_CARD_PUBLIC_MOD= (byte)0x01;
 	public static final byte INS_CS_RSA_CARD_PUBLIC_EXP= (byte)0x02;
@@ -66,7 +69,6 @@ public class SampleClient {
 	public static final byte INS_CS_ENC_AES = (byte)0x90;
 	public static final byte INS_CS_DEC_AES = (byte)0x89;
 	public static final byte INS_CS_HASH=(byte)0x99;
-	public static final int MODULUS_SIZE = 64;
 	public static final byte INS_TEST = (byte)0x68;
 	public static final byte INS_TEST2 = (byte)0x67;
 	public static final byte INS_TEST3 = (byte)0x66;
@@ -88,7 +90,23 @@ public class SampleClient {
 		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02};
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+		    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02
+		    };
 	static byte[] n = {
 		(byte) 0x80, (byte) 0xB0, (byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0x01, (byte) 0x02, (byte) 0x03,
 	    (byte) 0x04, (byte) 0x05, (byte) 0x01, (byte) 0x08, (byte) 0x07, (byte) 0x00, (byte) 0x00, (byte) 0x01,
@@ -212,7 +230,7 @@ public class SampleClient {
             	cadPair = APDUOps.connectAndSelect(cad);
             	canal = cadPair.getKey();
             	c = cadPair.getValue();
-                respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_SC_RSA_CARD_PUBLIC_MOD, (byte)0x00, (byte)0x00, canal);
+                respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_TEST, (byte)0x00, (byte)0x00, canal);
             	DH.printByteArray(respApdu.getData());
             	
             	break;
@@ -223,8 +241,8 @@ public class SampleClient {
             	byte[] AA = DH.modularExponentiation(G, n, P);
             	DH.printByteArray(respApdu.getData());
             	DH.printByteArray(AA);*/
-            	byte[] PP = DH.generateRandomPrime(512).toByteArray();
-            	PP = DH.adjustArray(PP, 64);
+            	byte[] PP = DH.generateRandomPrime(1024).toByteArray();
+            	PP = DH.adjustArray(PP, MODULUS_SIZE);
 //            	 byte[] PPP = new byte[PP.length - 1];
 //            	    
 //            	    // Copy elements from PP starting from index 1 to modifiedArray
@@ -243,8 +261,8 @@ public class SampleClient {
             	
 // ******************************************* for server ( step 1 ) ***************************************
 
-            	byte[] mm = DH.generateRandom(512).toByteArray();
-            	mm = DH.adjustArray(mm, 64);
+            	byte[] mm = DH.generateRandom(1024).toByteArray();
+            	mm = DH.adjustArray(mm, MODULUS_SIZE);
 //            	byte[] mmm = new byte[mm.length - 1];
 //            	if(mm.length!=64){ 
 //        	    // Copy elements from PP starting from index 1 to modifiedArray
@@ -272,13 +290,13 @@ public class SampleClient {
             	DH.printByteArray(KK2);
 
             	//KK = DH.masqueFunction(KK);
-            	byte[] KAes = new byte[16];
-            	System.arraycopy(KK, 0, KAes, 0, 16);
+            	byte[] KAes = new byte[AES_KEY_SIZE];
+            	System.arraycopy(KK, 0, KAes, 0, AES_KEY_SIZE);
             	System.out.println("<< K (server) >> masque function applied -------------------: ");
             	DH.printByteArray(KAes);
             	respApdu =APDUOps.sendApduToCard(CLA_APPLET, INS_CS_HASH, (byte)0x00, (byte)0x00, canal);
             	KK2=respApdu.getData();
-            	System.out.println("<< K (card) >> masque function applied -------------------: "+respApdu);
+            	System.out.println("<< K (card) >> masque function applied -------------------: ");
             	DH.printByteArray(KK2);
             	respApdu =APDUOps.sendApduToCard(CLA_APPLET, INS_CS_UID, (byte)0x00, (byte)0x00, canal);
             	byte[] UIDD = respApdu.getData();
@@ -369,12 +387,12 @@ public class SampleClient {
             	System.out.println("<< hash to be compared ( after decryption ) >> in the server -------------->>>  ");
             	byte[] PublicKeyy = MyJDBC.getClientData(connection, cardNumber).getPublicKey();
             	byte[][] concatenatedPublicKeyy= RSAOps.separateNAndD(PublicKeyy, MODULUS_SIZE);
-            	byte[] tmpp=new byte[16];
+            	byte[] tmpp=new byte[HASH_SIZE];
             	
 			byte[] signn;
 			try {
 				signn = DH.decrypt(tmp,RSAOps.createPublicKey(concatenatedPublicKeyy[0], concatenatedPublicKeyy[1]));
-				System.arraycopy(signn, 48, tmpp, 0, tmpp.length);
+				System.arraycopy(signn, (MODULUS_SIZE - HASH_SIZE), tmpp, 0, tmpp.length);
 				DH.printByteArray(tmpp);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -437,7 +455,7 @@ public class SampleClient {
 
         // generating rsa keys ----------------------------------------------------
 		// card keys
-		RSAOps cardRSA = new RSAOps(512);
+		RSAOps cardRSA = new RSAOps(1024);
 		// private
 		byte[] cardPrivateExp = cardRSA.getPrivateKeyExponent();
 		byte[] cardPrivateP = cardRSA.getPrivateKeyP();
@@ -451,7 +469,7 @@ public class SampleClient {
 		
 		
 		// server keys
-		RSAOps serverRSA = new RSAOps(512);
+		RSAOps serverRSA = new RSAOps(1024);
 		// private
 		byte[] serverPrivateExp = serverRSA.getPrivateKeyExponent();
 		byte[] serverPrivateMod = serverRSA.getPrivateKeyMod();
@@ -463,15 +481,16 @@ public class SampleClient {
 		System.out.println("server pub from server");
 		DH.printByteArray(serverPublicMod);
         //sending keys to the card
+		
+		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PUBLIC_EXP, (byte)0x00, (byte)0x00, cardPublicExp, canal);
+		
+		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PUBLIC_MOD, (byte)0x00, (byte)0x00, cardPublicMod, canal);
+		
 		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PRIVATE_EXP, (byte)0x00, (byte)0x00, cardPrivateExp, canal);
 		
 		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PRIVATE_P, (byte)0x00, (byte)0x00, cardPrivateP, canal);
 		
 		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PRIVATE_Q, (byte)0x00, (byte)0x00, cardPrivateQ, canal);
-		
-		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PUBLIC_EXP, (byte)0x00, (byte)0x00, cardPublicExp, canal);
-		
-		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_CARD_PUBLIC_MOD, (byte)0x00, (byte)0x00, cardPublicMod, canal);
 		
 		// server public keys
 		respApdu = APDUOps.sendApduToCard(CLA_APPLET, INS_CS_RSA_SERVER_PUBLIC_EXP, (byte)0x00, (byte)0x00, serverPublicExp, canal);
